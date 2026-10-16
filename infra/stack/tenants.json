@@ -2,7 +2,7 @@
   "synthetic-eu-01": {
     "label": "Synthetic Tenant EU 01",
     "tenant_region": "eu-west-1",
-    "storage_region": "eu-west-1"
+    "storage_region": "us-east-1"
   },
   "synthetic-eu-02": {
     "label": "Synthetic Tenant EU 02",
