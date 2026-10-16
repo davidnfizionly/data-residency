@@ -3,7 +3,7 @@
 # 1. A burst of BURST concurrent signed requests (fresh execution environments right after a deploy are cold).
 # 2. SEQ sequential signed requests (served by warm environments).
 # Each trace is classified from the Lambda logs: the first invocation in a log stream carries "Init Duration".
-# Client latency = curl time_total from this machine (Nairobi) to the API in eu-west-1, signed request included.
+# Client latency = curl time_total from the test machine to the API in eu-west-1, signed request included.
 # Server figures come from the Lambda REPORT lines (Init Duration, Duration).
 # Run from infra/stack with management account credentials.
 set -uo pipefail
