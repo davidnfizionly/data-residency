@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Data Residency Proof Platform - Architecture</title>
+<style>
+  :root { --ink: #232F3E; --orange: #ED7100; --region: #00A4A6; --grey: #7D8998; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; font-family: "Amazon Ember", "Helvetica Neue", Arial, sans-serif; color: var(--ink); }
+  #canvas { position: relative; width: 1800px; height: 1000px; background: #fff; overflow: hidden; }
+  .box { position: absolute; border: 2px solid; }
+  .box > .title { position: absolute; top: 6px; left: 10px; font-size: 19px; display: flex; align-items: center; gap: 8px; }
+  .box > .title img { width: 32px; height: 32px; }
+  .cloud { border-color: var(--ink); }
+  .cloud > .title { top: 0; left: 0; background: var(--ink); color: #fff; padding: 0 12px 0 0; height: 36px; }
+  .cloud > .title img { width: 36px; height: 36px; }
+  .org, .account { border-color: var(--orange); }
+  .region { border: 2px dashed var(--region); }
+  .region > .title { color: #00777A; }
+  .github { border-color: var(--grey); }
+  .node { position: absolute; width: 170px; margin-left: -85px; text-align: center; }
+  .node img { width: 64px; height: 64px; display: block; margin: 0 auto; }
+  .node span { display: block; margin-top: 6px; font-size: 20px; line-height: 1.15; }
+  .step { position: absolute; width: 30px; height: 30px; border-radius: 50%; background: #000; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .layer { position: absolute; border: 2px solid #000; border-radius: 6px; background: #F2F3F3; font-size: 19px; font-weight: 700; padding: 4px 10px; white-space: nowrap; }
+  svg { position: absolute; inset: 0; pointer-events: none; }
+  svg polyline { fill: none; stroke: #000; stroke-width: 1.6; }
+</style>
+</head>
+<body>
+<div id="canvas">
+
+  <!-- Containers -->
+  <div class="box github" style="left:60px; top:180px; width:290px; height:430px;"><div class="title">GitHub</div></div>
+  <div class="box cloud" style="left:400px; top:25px; width:1370px; height:950px;"><div class="title"><img src="icons/group-aws-cloud.svg" alt="">AWS Cloud</div></div>
+  <div class="box org" style="left:425px; top:75px; width:1320px; height:875px;"><div class="title"><img src="icons/organizations.svg" alt="">AWS Organization</div></div>
+  <div class="box account" style="left:450px; top:130px; width:635px; height:795px;"><div class="title">Management account</div></div>
+  <div class="box region" style="left:475px; top:335px; width:585px; height:565px;"><div class="title"><img src="icons/group-region.svg" alt="">eu-west-1</div></div>
+  <div class="box account" style="left:1115px; top:130px; width:605px; height:380px;"><div class="title">EU account</div></div>
+  <div class="box region" style="left:1140px; top:262px; width:555px; height:225px;"><div class="title"><img src="icons/group-region.svg" alt="">eu-west-1</div></div>
+  <div class="box account" style="left:1115px; top:545px; width:605px; height:380px;"><div class="title">US account</div></div>
+  <div class="box region" style="left:1140px; top:677px; width:555px; height:225px;"><div class="title"><img src="icons/group-region.svg" alt="">us-east-1</div></div>
+
+  <!-- Nodes: top = center y - 32 -->
+  <div class="node" style="left:200px; top:63px;"><img src="icons/user.svg" alt=""><span>Developer</span></div>
+  <div class="node" style="left:200px; top:238px;"><img src="icons/git-repository.svg" alt=""><span>Repository</span></div>
+  <div class="node" style="left:130px; top:418px;"><img src="icons/gear.svg" alt=""><span>Actions</span></div>
+  <div class="node" style="left:275px; top:418px;"><img src="icons/shield.svg" alt=""><span>OPA check</span></div>
+  <div class="node" style="left:200px; top:808px;"><img src="icons/client.svg" alt=""><span>Audit console</span></div>
+
+  <div class="node" style="left:600px; top:198px;"><img src="icons/iam.svg" alt=""><span>CI roles (OIDC)</span></div>
+  <div class="node" style="left:600px; top:528px;"><img src="icons/api-gateway.svg" alt=""><span>HTTP API</span></div>
+  <div class="node" style="left:830px; top:528px;"><img src="icons/lambda.svg" alt=""><span>Router</span></div>
+  <div class="node" style="left:830px; top:738px;"><img src="icons/cloudwatch.svg" alt=""><span>Span logs</span></div>
+
+  <div class="node" style="left:1640px; top:158px;"><img src="icons/organizations.svg" alt=""><span>SCP</span></div>
+  <div class="node" style="left:1250px; top:348px;"><img src="icons/iam-role.svg" alt=""><span>Writer role</span></div>
+  <div class="node" style="left:1440px; top:348px;"><img src="icons/dynamodb.svg" alt=""><span>PII table</span></div>
+  <div class="node" style="left:1610px; top:348px;"><img src="icons/s3.svg" alt=""><span>Access logs</span></div>
+
+  <div class="node" style="left:1640px; top:573px;"><img src="icons/organizations.svg" alt=""><span>SCP</span></div>
+  <div class="node" style="left:1250px; top:763px;"><img src="icons/iam-role.svg" alt=""><span>Writer role</span></div>
+  <div class="node" style="left:1440px; top:763px;"><img src="icons/dynamodb.svg" alt=""><span>PII table</span></div>
+  <div class="node" style="left:1610px; top:763px;"><img src="icons/s3.svg" alt=""><span>Access logs</span></div>
+
+  <!-- Proof layers -->
+  <div class="layer" style="left:68px; top:552px;">Layer 1: Git and CI gate</div>
+  <div class="layer" style="left:1265px; top:176px;">Layer 2: account guardrail</div>
+  <div class="layer" style="left:1265px; top:591px;">Layer 2: account guardrail</div>
+  <div class="layer" style="left:718px; top:852px;">Layer 3: runtime trace</div>
+
+  <!-- Steps -->
+  <div class="step" style="left:132px; top:50px;">1</div>
+  <div class="step" style="left:302px; top:398px;">2</div>
+  <div class="step" style="left:532px; top:182px;">3</div>
+  <div class="step" style="left:532px; top:512px;">4</div>
+  <div class="step" style="left:762px; top:512px;">5</div>
+  <div class="step" style="left:1372px; top:332px;">6</div>
+  <div class="step" style="left:1372px; top:747px;">6</div>
+  <div class="step" style="left:1572px; top:142px;">7</div>
+  <div class="step" style="left:1572px; top:557px;">7</div>
+  <div class="step" style="left:762px; top:722px;">8</div>
+  <div class="step" style="left:132px; top:792px;">9</div>
+
+  <svg width="1800" height="1000" viewBox="0 0 1800 1000">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#000"/>
+      </marker>
+    </defs>
+    <!-- 1 developer to repository -->
+    <polyline points="200,154 200,234" marker-end="url(#arrow)"/>
+    <!-- 2 repository to Actions, Actions to OPA check -->
+    <polyline points="200,334 200,375 130,375 130,414" marker-end="url(#arrow)"/>
+    <polyline points="164,450 239,450" marker-end="url(#arrow)"/>
+    <!-- 3 merged change applied through the OIDC roles -->
+    <polyline points="309,450 375,450 375,230 564,230" marker-end="url(#arrow)"/>
+    <!-- 4 console to API (request and response) -->
+    <polyline points="236,840 375,840 375,560 564,560" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <!-- 5 API to router -->
+    <polyline points="636,560 794,560" marker-end="url(#arrow)"/>
+    <!-- 6 router to the tenant's regional writer role, then table and logs -->
+    <polyline points="866,560 1000,560 1000,380 1214,380" marker-end="url(#arrow)"/>
+    <polyline points="1000,560 1000,795 1214,795" marker-end="url(#arrow)"/>
+    <polyline points="1286,380 1404,380" marker-end="url(#arrow)"/>
+    <polyline points="1270,346 1270,305 1610,305 1610,344" marker-end="url(#arrow)"/>
+    <polyline points="1286,795 1404,795" marker-end="url(#arrow)"/>
+    <polyline points="1270,761 1270,720 1610,720 1610,759" marker-end="url(#arrow)"/>
+    <!-- 8 router writes spans and reads them back -->
+    <polyline points="830,624 830,734" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <!-- 9 console reads the Git history -->
+    <polyline points="164,270 35,270 35,840 164,840" marker-end="url(#arrow)"/>
+  </svg>
+</div>
+</body>
+</html>
