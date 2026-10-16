@@ -45,3 +45,21 @@ Real problems, root causes and fixes, written as they occur. Corrections of earl
 - Root cause: the trust policies expected the name-based subject `repo:davidnfizionly/data-residency:ref:refs/heads/main`, but GitHub issues an immutable subject for this repository that includes the numeric owner and repository IDs (`repo:davidnfizionly@210562805/data-residency@1422220770:...`), as shown by `GET /repos/{repo}/actions/oidc/customization/sub`.
 - Fix: the trust policies now use the immutable subject prefix. This is also stricter: a recreated repository with the same name gets a new ID and cannot assume the roles.
 - Side effect: the trust update was refused by the auto-apply gate because the plan JSON repeats each role's inline policies under `aws_iam_role.<name>.inline_policy`, an address not listed in ADR-015. The two mirror addresses were added to ADR-015; the gate itself was not relaxed.
+
+## Phase 6 - Organization and policy IDs visible in the console
+
+- What: the first headless capture of the violation simulator showed the SCP denial message with the organization ID (`o-...`) and policy ID (`p-...`) in clear. The router and the test scripts masked only 12-digit account IDs.
+- Root cause: the masking regex covered account IDs only; AWS denial messages also carry the SCP ARN.
+- Fix: organization, root and policy IDs are now masked in the console proxy (everything shown in the browser) and in the router (span messages and API responses). The capture was deleted and retaken, and every capture is opened and checked before it is added.
+
+## Phase 6 - Compliance history out of order
+
+- What: the timeline listed pull requests below older commits.
+- Root cause: commits carry the author's local offset (`+03:00`) and pull requests carry UTC (`Z`); the entries were sorted as strings.
+- Fix: sort by parsed timestamp.
+
+## Phase 6 - Fresh trace not visible right after a write
+
+- What: after "Write a test record now", the newest trace was sometimes missing from the evidence list.
+- Root cause: spans reach CloudWatch Logs a few seconds after the Lambda writes them; a fixed 4-second wait was not always enough.
+- Fix: the console polls until the trace ID returned by the write appears (up to 30 seconds). The root span is also listed first, since spans that start in the same millisecond had no stable order.
