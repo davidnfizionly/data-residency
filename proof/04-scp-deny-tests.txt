@@ -1,0 +1,21 @@
+Run at 2026-10-16T13:10:18Z
+=== eu account (home region eu-west-1), role session without tenant_region tag
+--- 1. Non-PII table write in the OTHER region (us-east-1): expect SCP deny (region lock)
+
+aws: [ERROR]: An error occurred (AccessDeniedException) when calling the PutItem operation: User: arn:aws:sts::<account-id>:assumed-role/OrganizationAccountAccessRole/scp-test is not authorized to perform: dynamodb:PutItem on resource: arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-gate-test with an explicit deny in a service control policy: arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id>
+--- 2. PII table write in the HOME region (eu-west-1), no tenant_region tag: expect SCP deny (tenant check)
+
+aws: [ERROR]: An error occurred (AccessDeniedException) when calling the PutItem operation: User: arn:aws:sts::<account-id>:assumed-role/OrganizationAccountAccessRole/scp-test is not authorized to perform: dynamodb:PutItem on resource: arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu with an explicit deny in a service control policy: arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id>
+--- 3. Control: non-PII table write in the HOME region (eu-west-1): expect ResourceNotFoundException (SCP allows)
+
+aws: [ERROR]: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found
+=== us account (home region us-east-1), role session without tenant_region tag
+--- 1. Non-PII table write in the OTHER region (eu-west-1): expect SCP deny (region lock)
+
+aws: [ERROR]: An error occurred (AccessDeniedException) when calling the PutItem operation: User: arn:aws:sts::<account-id>:assumed-role/OrganizationAccountAccessRole/scp-test is not authorized to perform: dynamodb:PutItem on resource: arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-gate-test with an explicit deny in a service control policy: arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id>
+--- 2. PII table write in the HOME region (us-east-1), no tenant_region tag: expect SCP deny (tenant check)
+
+aws: [ERROR]: An error occurred (AccessDeniedException) when calling the PutItem operation: User: arn:aws:sts::<account-id>:assumed-role/OrganizationAccountAccessRole/scp-test is not authorized to perform: dynamodb:PutItem on resource: arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us with an explicit deny in a service control policy: arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id>
+--- 3. Control: non-PII table write in the HOME region (us-east-1): expect ResourceNotFoundException (SCP allows)
+
+aws: [ERROR]: An error occurred (ResourceNotFoundException) when calling the PutItem operation: Requested resource not found

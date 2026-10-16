@@ -1,0 +1,50 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyDataWritesOutsideHomeRegion",
+      "Effect": "Deny",
+      "Action": [
+        "dynamodb:CreateTable",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ImportTable",
+        "dynamodb:RestoreTableFromBackup",
+        "dynamodb:RestoreTableToPointInTime",
+        "s3:CreateBucket",
+        "s3:PutObject"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringNotEquals": {
+          "aws:RequestedRegion": "${home_region}"
+        }
+      }
+    },
+    {
+      "Sid": "DenyPiiWritesForOtherTenantRegions",
+      "Effect": "Deny",
+      "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:BatchWriteItem"
+      ],
+      "Resource": "arn:aws:dynamodb:*:*:table/data-residency-pii*",
+      "Condition": {
+        "StringNotEquals": {
+          "aws:PrincipalTag/tenant_region": "${zone}"
+        }
+      }
+    },
+    {
+      "Sid": "DenyCrossRegionReplication",
+      "Effect": "Deny",
+      "Action": [
+        "dynamodb:CreateTableReplica",
+        "s3:PutReplicationConfiguration"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
