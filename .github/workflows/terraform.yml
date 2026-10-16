@@ -30,7 +30,8 @@ env:
 
 jobs:
   plan-and-policy:
-    if: github.event_name == 'pull_request'
+    # Fork pull requests never reach AWS: they get no secrets and no id-token, and this guard skips them.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     env:
       TF_VAR_member_role_name: data-residency-ci-plan

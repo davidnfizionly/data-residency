@@ -1,0 +1,19 @@
+Pre-push guard test, 2026-10-16T13:49:38Z. Target: a local bare repository. Test values replaced by placeholders below.
+=== Faulty push (expect REFUSED)
+pre-push: fcb5f75: account ID, ARN or key material:
+fcb5f75d9070a0598e5892c0fa0a42937699eca3:docs/hook-test.txt:1:key = "<fake-access-key>"
+pre-push: fcb5f75: e-mail address in files:
+fcb5f75d9070a0598e5892c0fa0a42937699eca3:docs/hook-test.txt:2:<fake-email>
+pre-push: fcb5f75: sensitive literal in files:
+fcb5f75d9070a0598e5892c0fa0a42937699eca3:docs/hook-test.txt:3:marker = "<test-literal>"
+pre-push: fcb5f75: assistant or model mention in commit message
+pre-push: fcb5f75: e-mail address in commit message
+pre-push: REFUSED. Clean the commits above before pushing.
+error: failed to push some refs to '<local-test-remote>'
+push exit=1
+=== Clean push of main (expect clean)
+pre-push: clean.
+To <local-test-remote>
+ * [new branch]      main -> main
+push exit=0
+pre-push: clean.
