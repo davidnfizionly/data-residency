@@ -20,8 +20,10 @@ const LOG_GROUP = process.env.LOG_GROUP;
 const REGISTRY_SHA256 = createHash('sha256').update(process.env.TENANT_REGISTRY).digest('hex');
 const ZONE_OF_REGION = Object.fromEntries(Object.entries(DATA_PLANES).map(([region, p]) => [region, p.zone]));
 
-// Account IDs never leave the function: they are masked in span messages and responses.
-const redact = (text) => String(text).replace(/(?<![0-9a-zA-Z])\d{12}(?![0-9a-zA-Z])/g, '<account-id>');
+// Account, organization and policy IDs never leave the function: they are masked in span messages and responses.
+const redact = (text) => String(text)
+  .replace(/(?<![0-9a-zA-Z])\d{12}(?![0-9a-zA-Z])/g, '<account-id>')
+  .replace(/\b(o|r|p)-[a-z0-9]{4,32}\b/g, '$1-<id>');
 
 class StdoutSpanExporter {
   export(spans, done) {
