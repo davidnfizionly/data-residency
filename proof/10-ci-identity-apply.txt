@@ -1,0 +1,34 @@
+Plan summary for ci:
+  # aws_iam_openid_connect_provider.github will be created
+  # aws_iam_role.apply will be created
+  # aws_iam_role.plan will be created
+  # aws_iam_role_policy.apply will be created
+  # aws_iam_role_policy.plan will be created
+  # module.member_eu.aws_iam_role.deploy will be created
+  # module.member_eu.aws_iam_role.plan will be created
+  # module.member_eu.aws_iam_role_policy.deploy will be created
+  # module.member_eu.aws_iam_role_policy.plan will be created
+  # module.member_us.aws_iam_role.deploy will be created
+  # module.member_us.aws_iam_role.plan will be created
+  # module.member_us.aws_iam_role_policy.deploy will be created
+  # module.member_us.aws_iam_role_policy.plan will be created
+Plan: 13 to add, 0 to change, 0 to destroy.
+AUTO-APPLY ALLOWED: no delete, no account/organization/SCP change, no undocumented IAM wildcard
+aws_iam_openid_connect_provider.github: Creation complete after 1s [id=arn:aws:iam::<account-id>:oidc-provider/token.actions.githubusercontent.com]
+aws_iam_role.apply: Creation complete after 2s [id=data-residency-ci-apply]
+aws_iam_role.plan: Creation complete after 2s [id=data-residency-ci-plan]
+aws_iam_role_policy.apply: Creation complete after 1s [id=data-residency-ci-apply:apply-stack]
+aws_iam_role_policy.plan: Creation complete after 1s [id=data-residency-ci-plan:plan-stack]
+module.member_us.aws_iam_role.deploy: Creation complete after 8s [id=data-residency-ci-deploy]
+module.member_eu.aws_iam_role.deploy: Creation complete after 9s [id=data-residency-ci-deploy]
+module.member_eu.aws_iam_role.plan: Creation complete after 9s [id=data-residency-ci-plan]
+module.member_us.aws_iam_role_policy.deploy: Creation complete after 1s [id=data-residency-ci-deploy:deploy-data-plane]
+module.member_eu.aws_iam_role_policy.deploy: Creation complete after 0s [id=data-residency-ci-deploy:deploy-data-plane]
+module.member_eu.aws_iam_role_policy.plan: Creation complete after 1s [id=data-residency-ci-plan:read-data-plane-config]
+module.member_us.aws_iam_role.plan: Creation complete after 13s [id=data-residency-ci-plan]
+module.member_us.aws_iam_role_policy.plan: Creation complete after 1s [id=data-residency-ci-plan:read-data-plane-config]
+Releasing state lock. This may take a few moments...
+Apply complete! Resources: 13 added, 0 changed, 0 destroyed.
+Outputs:
+apply_role_arn = "arn:aws:iam::<account-id>:role/data-residency-ci-apply"
+plan_role_arn = "arn:aws:iam::<account-id>:role/data-residency-ci-plan"

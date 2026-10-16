@@ -1,0 +1,156 @@
+# Residency pipeline for infra/stack.
+# - pull_request: build, terraform plan (read-only role, no lock), OPA residency check. Required to merge.
+# - push to main: plan, OPA check again, then terraform apply. This is the only deploy path.
+# - schedule: daily drift check, fails if the deployed state differs from main.
+
+name: terraform
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
+  cancel-in-progress: false
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+  TF_VAR_member_account_ids: ${{ secrets.MEMBER_ACCOUNT_IDS }}
+  AWS_REGION: eu-west-1
+
+jobs:
+  plan-and-policy:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_member_role_name: data-residency-ci-plan
+      TF_VAR_git_commit: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: open-policy-agent/setup-opa@v2
+        with:
+          version: 1.21.2
+      - name: OPA unit tests
+        run: opa test policy/ -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build router
+        working-directory: lambdas/router
+        run: npm ci && npm run build
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.8
+          terraform_wrapper: false
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_PLAN_ROLE_ARN }}
+          aws-region: eu-west-1
+      - name: Terraform plan
+        working-directory: infra/stack
+        run: |
+          printf 'bucket = "%s"\nregion = "us-east-1"\nencrypt = true\nuse_lockfile = true\n' "${{ secrets.TF_STATE_BUCKET }}" > ../state.tfbackend
+          terraform init -backend-config=../state.tfbackend
+          terraform plan -lock=false -out=pr.tfplan -no-color | tee plan.txt
+          terraform show -json pr.tfplan > plan.json
+      - name: OPA residency check
+        run: |
+          set +e
+          policy/check-plan.sh infra/stack/plan.json | tee opa.txt
+          status=${PIPESTATUS[0]}
+          {
+            echo "## Residency policy"
+            echo '```'
+            cat opa.txt
+            echo '```'
+            echo "## Plan summary"
+            echo '```'
+            grep -E '^  # |^Plan:|^No changes' infra/stack/plan.txt || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+
+  apply:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_member_role_name: data-residency-ci-deploy
+      TF_VAR_git_commit: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: open-policy-agent/setup-opa@v2
+        with:
+          version: 1.21.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build router
+        working-directory: lambdas/router
+        run: npm ci && npm run build
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.8
+          terraform_wrapper: false
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_APPLY_ROLE_ARN }}
+          aws-region: eu-west-1
+      - name: Terraform plan
+        working-directory: infra/stack
+        run: |
+          printf 'bucket = "%s"\nregion = "us-east-1"\nencrypt = true\nuse_lockfile = true\n' "${{ secrets.TF_STATE_BUCKET }}" > ../state.tfbackend
+          terraform init -backend-config=../state.tfbackend
+          terraform plan -out=main.tfplan -no-color | tee plan.txt
+          terraform show -json main.tfplan > plan.json
+      - name: OPA residency check
+        run: policy/check-plan.sh infra/stack/plan.json
+      - name: Terraform apply
+        working-directory: infra/stack
+        run: |
+          date -u +"Apply started %Y-%m-%dT%H:%M:%SZ"
+          terraform apply -no-color main.tfplan
+          date -u +"Apply finished %Y-%m-%dT%H:%M:%SZ"
+
+  drift:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_member_role_name: data-residency-ci-deploy
+      TF_VAR_git_commit: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build router
+        working-directory: lambdas/router
+        run: npm ci && npm run build
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.8
+          terraform_wrapper: false
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_APPLY_ROLE_ARN }}
+          aws-region: eu-west-1
+      - name: Terraform drift check
+        working-directory: infra/stack
+        run: |
+          printf 'bucket = "%s"\nregion = "us-east-1"\nencrypt = true\nuse_lockfile = true\n' "${{ secrets.TF_STATE_BUCKET }}" > ../state.tfbackend
+          terraform init -backend-config=../state.tfbackend
+          set +e
+          terraform plan -lock=false -detailed-exitcode -no-color > plan.txt
+          status=$?
+          grep -E '^  # |^Plan:|^No changes' plan.txt
+          if [ $status -eq 2 ]; then echo "::error::Drift detected: deployed infrastructure differs from main"; fi
+          exit $status

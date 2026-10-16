@@ -1,0 +1,27 @@
+Run at 2026-10-16T13:39:05Z, Version: 1.21.2
+=== 1. OPA unit tests
+policy/residency_test.rego:79:
+data.terraform.residency_test.test_deleted_resources_are_ignored: PASS (4.7397ms)
+policy/residency_test.rego:52:
+data.terraform.residency_test.test_region_wired_to_wrong_data_plane_is_denied: PASS (6.9231ms)
+policy/residency_test.rego:64:
+data.terraform.residency_test.test_pii_table_replica_is_denied: PASS (7.2696ms)
+policy/residency_test.rego:70:
+data.terraform.residency_test.test_s3_replication_is_denied: PASS (1.2834ms)
+policy/residency_test.rego:46:
+data.terraform.residency_test.test_eu_tenant_routed_to_us_is_denied: PASS (5.3305ms)
+policy/residency_test.rego:58:
+data.terraform.residency_test.test_eu_pii_table_in_us_region_is_denied: PASS (5.3412ms)
+policy/residency_test.rego:42:
+data.terraform.residency_test.test_compliant_plan_passes: PASS (14.3291ms)
+--------------------------------------------------------------------------------
+PASS: 7/7
+=== 2. Real plan of infra/stack, compliant registry
+OPA residency check passed: no tenant, table or replica leaves its region.
+exit=0
+=== 3. Real plan of infra/stack with synthetic-eu-01 routed to us-east-1 (local edit, reverted after)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+OPA residency check FAILED:
+RESIDENCY VIOLATION: tenant synthetic-eu-01 must stay in eu-west-1, but this change would route its personal data to us-east-1.
+exit=1
+registry restored

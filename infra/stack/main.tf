@@ -26,6 +26,12 @@ variable "member_account_ids" {
   type        = map(string)
 }
 
+variable "member_role_name" {
+  description = "Role assumed in each member account: OrganizationAccountAccessRole locally, the CI plan or deploy role in the pipeline"
+  type        = string
+  default     = "OrganizationAccountAccessRole"
+}
+
 locals {
   default_tags = { Project = "data-residency" }
 }
@@ -44,7 +50,7 @@ provider "aws" {
   region = "eu-west-1"
 
   assume_role {
-    role_arn = "arn:aws:iam::${var.member_account_ids["eu"]}:role/OrganizationAccountAccessRole"
+    role_arn = "arn:aws:iam::${var.member_account_ids["eu"]}:role/${var.member_role_name}"
   }
 
   default_tags {
@@ -57,7 +63,7 @@ provider "aws" {
   region = "us-east-1"
 
   assume_role {
-    role_arn = "arn:aws:iam::${var.member_account_ids["us"]}:role/OrganizationAccountAccessRole"
+    role_arn = "arn:aws:iam::${var.member_account_ids["us"]}:role/${var.member_role_name}"
   }
 
   default_tags {

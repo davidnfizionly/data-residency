@@ -15,5 +15,14 @@ One line per decision that is not in `docs/PROJECT_PLAN.md`: what, why, what was
 - **ADR-011 Spans exported as JSON lines to CloudWatch Logs.** The OpenTelemetry SDK runs in the router with a small exporter that writes each finished span to stdout; the Lambda log group (7-day retention) is the span store, read back with a JSON filter pattern by `GET /traces`. Rejected: X-Ray or an OTLP collector, which add a service and setup for the same evidence. Spans carry only synthetic tenant IDs, region metadata, and error messages with account IDs masked.
 - **ADR-012 Misroute simulation only on direct invocation.** `simulate_storage_region` is honored only when the Lambda is invoked directly (IAM `lambda:InvokeFunction`), never through the API, so the violation demo needs AWS credentials and cannot be triggered by an API caller. Rejected: a demo flag on the public route.
 - **ADR-013 Writer roles constructed by name.** IAM policies reference role, table and bucket ARNs that are known at plan time, so the auto-apply gate can read every policy; the writer roles are ordered after the router role because IAM rejects a trust policy whose principal does not exist yet.
+- **ADR-014 Separate CI identity stack with plan and apply roles.** `infra/ci` (applied by hand, never by the pipeline) creates the GitHub OIDC provider, a read-only plan role assumable only by `pull_request` runs, and an apply role assumable only by runs on `main`; each member account gets matching `data-residency-ci-plan` and `data-residency-ci-deploy` roles. A pull request, even one that edits the workflow, can therefore only read. No CI role can read PII items or log objects. PR plans run with `-lock=false` because the plan role cannot write the lock file. Rejected: one role for both (a PR could apply) and `OrganizationAccountAccessRole` for CI (administrator in the member accounts).
+- **ADR-015 Read-only wildcard actions for the CI roles.** Terraform's refresh of a Lambda function, a DynamoDB table and an S3 bucket calls many read APIs that change between provider versions, so the CI roles use `lambda:Get*`, `lambda:List*`, `dynamodb:Describe*` and `s3:GetBucket*`, each scoped to this project's function, table or bucket-name prefix (bucket-level only, no object reads). Every mutating action is listed explicitly. Rejected: enumerating every read call (breaks on provider upgrades) and AWS managed `ReadOnlyAccess` (would allow reading PII items). Covered addresses:
+  - wildcard-exception: aws_iam_role_policy.plan
+  - wildcard-exception: aws_iam_role_policy.apply
+  - wildcard-exception: module.member_eu.aws_iam_role_policy.plan
+  - wildcard-exception: module.member_eu.aws_iam_role_policy.deploy
+  - wildcard-exception: module.member_us.aws_iam_role_policy.plan
+  - wildcard-exception: module.member_us.aws_iam_role_policy.deploy
+- **ADR-016 OPA without conftest.** The pipeline runs `opa eval` on the plan JSON and `opa test` on the rule's unit tests; one binary covers both. Rejected: conftest, an extra wrapper with no added check.
 
-Documented IAM wildcard exceptions: none.
+Documented IAM wildcard exceptions: the six addresses listed in ADR-015.
