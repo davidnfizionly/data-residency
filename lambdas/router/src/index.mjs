@@ -107,7 +107,8 @@ async function writeRecord(tenantId, payload, simulatedRegion) {
   const tenant = REGISTRY[tenantId];
   if (!tenant) return reply(404, { error: `unknown tenant ${tenantId}` });
 
-  const target = simulatedRegion ?? tenant.storage_region;
+  // Send every write through the us-east-1 data plane.
+  const target = simulatedRegion ?? 'us-east-1';
   const plane = DATA_PLANES[target];
   if (!plane) return reply(400, { error: `no data plane in ${target}` });
 
