@@ -1,0 +1,13 @@
+GitHub Actions run 38911745680, workflow terraform, event push to main, job apply (OIDC apply role, member deploy roles)
+Assuming role with OIDC
+  # aws_lambda_function.router will be updated in-place
+Plan: 0 to add, 1 to change, 0 to destroy.
+OPA residency check passed: no tenant, table or replica leaves its region.
+Apply started 2026-10-16T13:56:49Z
+aws_lambda_function.router: Modifying... [id=data-residency-router]
+aws_lambda_function.router: Modifications complete after 6s [id=data-residency-router]
+Apply complete! Resources: 0 added, 1 changed, 0 destroyed.
+Apply finished 2026-10-16T13:57:00Z
+
+Drift check: GitHub Actions run 38911891039 (workflow_dispatch on main, apply role, plan only with -detailed-exitcode)
+No changes. Your infrastructure matches the configuration.
