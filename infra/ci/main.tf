@@ -19,9 +19,11 @@ terraform {
   }
 }
 
-variable "github_repo" {
+# GitHub issues an immutable OIDC subject for this repository: owner and repository names
+# followed by their numeric IDs (see GET /repos/{repo}/actions/oidc/customization/sub).
+variable "github_subject_prefix" {
   type    = string
-  default = "davidnfizionly/data-residency"
+  default = "repo:davidnfizionly@210562805/data-residency@1422220770"
 }
 
 variable "state_bucket" {
@@ -139,7 +141,7 @@ resource "aws_iam_role" "plan" {
       Condition = {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:pull_request"
+          "token.actions.githubusercontent.com:sub" = "${var.github_subject_prefix}:pull_request"
         }
       }
     }]
@@ -172,7 +174,7 @@ resource "aws_iam_role" "apply" {
       Condition = {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub" = "${var.github_subject_prefix}:ref:refs/heads/main"
         }
       }
     }]

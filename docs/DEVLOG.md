@@ -38,3 +38,10 @@ Real problems, root causes and fixes, written as they occur. Corrections of earl
 ## Phase 4 - Tenant-tag SCP case now tested
 
 - The deliberate misroute (EU tenant forced to us-east-1 by direct invocation) assumed `data-residency-writer-us` with session tag `tenant_region=eu`; the US account SCP denied `dynamodb:PutItem` explicitly. This closes the gap noted in Phase 2.
+
+## Phase 5 - First pipeline run could not assume the apply role
+
+- What: the first run on `main` failed at `configure-aws-credentials` with `Not authorized to perform sts:AssumeRoleWithWebIdentity`.
+- Root cause: the trust policies expected the name-based subject `repo:davidnfizionly/data-residency:ref:refs/heads/main`, but GitHub issues an immutable subject for this repository that includes the numeric owner and repository IDs (`repo:davidnfizionly@210562805/data-residency@1422220770:...`), as shown by `GET /repos/{repo}/actions/oidc/customization/sub`.
+- Fix: the trust policies now use the immutable subject prefix. This is also stricter: a recreated repository with the same name gets a new ID and cannot assume the roles.
+- Side effect: the trust update was refused by the auto-apply gate because the plan JSON repeats each role's inline policies under `aws_iam_role.<name>.inline_policy`, an address not listed in ADR-015. The two mirror addresses were added to ADR-015; the gate itself was not relaxed.
