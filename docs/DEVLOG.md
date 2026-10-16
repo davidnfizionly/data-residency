@@ -90,3 +90,15 @@ Real problems, root causes and fixes, written as they occur. Corrections of earl
 
 - What: the capture of the EU PII table needed the AWS console in the EU member account, but the console session was the management account's root user, and the root user cannot switch roles.
 - Fix: no IAM user or password was created. A one-off console sign-in link was built through the AWS federation endpoint from a 1-hour `OrganizationAccountAccessRole` session in the EU account, restricted by a session policy to DynamoDB configuration reads (`Describe*`, `List*`, metrics and alarms; no `GetItem`, `Scan` or `Query`). The link was written to a local file outside the repository, never printed, and had to be used within 15 minutes; the session expired on its own at 16:22 UTC, so there was nothing to delete afterwards.
+
+## Phase 9 - Destroy outputs carried identifiers
+
+- What: the first versions of the destroy and post-destroy outputs still contained the organization ID, SCP IDs, member account IDs, the state bucket name and the API ID (in `api_endpoint`, `invoke_url` and route and integration `id` fields).
+- Root cause: the masking `sed` replaced only the first 12-digit match per line, and did not cover bucket suffixes, API Gateway IDs or organization and policy IDs in those files.
+- Fix: every pattern is now masked with global replacement, and the four files were re-checked against the known sensitive values, 12-digit runs, organization, policy and API IDs and e-mail addresses until every count was 0, before any commit.
+
+## Phase 9 - Teardown decisions
+
+- The pipeline workflow was disabled first, after the last apply run finished, so that the daily drift check would not fail against deleted resources and no merge could recreate them.
+- The organization and the two member accounts were kept, empty, with only the default `FullAWSAccess` SCP (no charge). The Terraform state of `infra/org` was moved to a local, ignored file before the state bucket was deleted, so the accounts can still be managed or closed later.
+- With the workflow disabled, the required `plan-and-policy` check can no longer report, so a pull request to `main` cannot pass branch protection as configured.

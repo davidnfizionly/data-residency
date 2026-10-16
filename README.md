@@ -71,10 +71,11 @@ Start 12:36 UTC. Times are wall clock and include waiting for approvals, merges 
 6. **Policy and pipeline (35 min, of which about 5 waiting for the repository).** The OPA rule and its unit tests, the CI identity stack (OIDC provider, read-only plan role, main-only apply role), the workflow, a history audit and a pre-push guard before the first public push, then branch protection.
 7. **Audit console (11 min).** Tenant evidence view, violation simulator, compliance history, and a headless end-to-end run.
 8. **Waiting for merges and fixing a history leak (29 min).** Merges are done by hand in the GitHub UI; a committer e-mail written by those merges was removed from history (see below).
-9. **Demo scenarios (24 min, including two merges by hand).** Latency measurement and the four scenarios.
-10. **Diagram and README.** This page and the diagram.
+9. **Demo scenarios (25 min, including two merges by hand).** Latency measurement and the four scenarios.
+10. **Diagram, README and console captures (29 min).** The diagram, this page, and console captures taken by hand; one needed a read-only federated sign-in to the EU account because the console session could not switch roles.
+11. **Final audit and teardown (25 min).** History and image audit, then every stack destroyed in order and every account and region checked.
 
-The 90-minute target was passed at 14:06 UTC, during the audit console. The total build time is reported in [Cleanup](#cleanup) once teardown is done.
+**Total: 3 h 22 min** (12:36:28 to 15:58:20 UTC), against a 90-minute target that was passed at 14:06 UTC, during the audit console. About 80 min of that total, estimated from the checkpoint timestamps, was waiting: approvals, the repository creation, merges done by hand in the GitHub UI, and console captures. The rest went mostly to the pipeline and its identity (35 min), the organization and SCPs (19 min), and fixing problems listed below.
 
 ## Real Problems Hit and Fixed
 
@@ -176,7 +177,7 @@ Output: [proof/14-latency-cold-warm.txt](proof/14-latency-cold-warm.txt). Automa
 - A 5 USD monthly cost budget (credits and refunds excluded) was created before any other resource. It has **no alert configured**: it tracks spend only, and spend is checked by hand in Budgets and Cost Explorer, which lag up to 24 hours.
 - Pay-per-use only: Lambda, HTTP API, on-demand DynamoDB, S3, CloudWatch Logs with 7-day retention. No NAT Gateway, no EC2, no provisioned database, no always-on resource.
 - Organizations, the accounts and the SCPs have no charge.
-- No cost figure is stated here until Cost Explorer shows the final amount.
+- The budget was deleted with the rest of the backend at teardown. Cost Explorer lags up to 24 hours, so no final cost figure is stated here.
 
 ## Running This Yourself
 
@@ -243,4 +244,22 @@ All decisions, including the ones not listed here, are in [docs/DECISIONS.md](do
 
 ## Cleanup
 
-Teardown order: `infra/stack`, then `infra/ci`, then the SCP attachments and policies in `infra/org`, then the state bucket last. Each step is approved by hand. Resources are then listed in every account and region with `aws resourcegroupstaggingapi get-resources --tag-filters Key=Project,Values=data-residency` and service listings to confirm nothing tagged remains.
+Teardown on 2026-10-16, each step approved by hand, in this order:
+
+1. The pipeline workflow was disabled after the last apply run finished, so the daily drift check could not fail against deleted resources and no merge could redeploy.
+2. `infra/stack`: 27 resources destroyed (API, router, log group, tables, buckets, writer roles).
+3. `infra/ci`: 13 resources destroyed (OIDC provider, CI roles in all three accounts).
+4. `infra/org`: the two SCP attachments and policies destroyed. The organization and the two member accounts are kept, empty, with only the default `FullAWSAccess` SCP; they have no charge. Their Terraform state was moved to a local file first.
+5. `infra/backend`: the state bucket emptied (68 object versions, 47 delete markers) and destroyed with the budget, 7 resources.
+
+```bash
+terraform -chdir=infra/stack destroy
+terraform -chdir=infra/ci destroy
+terraform -chdir=infra/org destroy -target=aws_organizations_policy_attachment.residency -target=aws_organizations_policy.residency
+terraform -chdir=infra/backend destroy    # after moving its state to a local backend and emptying the bucket
+aws resourcegroupstaggingapi get-resources --tag-filters Key=Project,Values=data-residency
+```
+
+The final check found, in every account and in both regions, no Lambda function, HTTP API, DynamoDB table, log group, bucket, IAM role or OIDC provider from the project; the only tagged resources left are the two member accounts.
+
+Output: [proof/19-destroy-stack.txt](proof/19-destroy-stack.txt), [proof/20-destroy-ci.txt](proof/20-destroy-ci.txt), [proof/21-post-destroy-check.txt](proof/21-post-destroy-check.txt), [proof/22-final-cleanup-check.txt](proof/22-final-cleanup-check.txt)

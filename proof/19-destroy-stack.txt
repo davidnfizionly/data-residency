@@ -1,0 +1,927 @@
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+Terraform will perform the following actions:
+  # aws_apigatewayv2_api.router will be destroyed
+  - resource "aws_apigatewayv2_api" "router" {
+      - api_endpoint                 = "https://<api-id>.execute-api.eu-west-1.amazonaws.com" -> null
+      - api_key_selection_expression = "$request.header.x-api-key" -> null
+      - arn                          = "arn:aws:apigateway:eu-west-1::/apis/<api-id>" -> null
+      - disable_execute_api_endpoint = false -> null
+      - execution_arn                = "arn:aws:execute-api:eu-west-1:<account-id>:<api-id>" -> null
+      - id                           = "<api-id>" -> null
+      - ip_address_type              = "ipv4" -> null
+      - name                         = "data-residency-router" -> null
+      - protocol_type                = "HTTP" -> null
+      - region                       = "eu-west-1" -> null
+      - route_selection_expression   = "$request.method $request.path" -> null
+      - tags                         = {} -> null
+      - tags_all                     = {
+          - "Project" = "data-residency"
+        } -> null
+        # (2 unchanged attributes hidden)
+    }
+  # aws_apigatewayv2_integration.router will be destroyed
+  - resource "aws_apigatewayv2_integration" "router" {
+      - api_id                                    = "<api-id>" -> null
+      - connection_type                           = "INTERNET" -> null
+      - id                                        = "<id>" -> null
+      - integration_method                        = "POST" -> null
+      - integration_type                          = "AWS_PROXY" -> null
+      - integration_uri                           = "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router/invocations" -> null
+      - payload_format_version                    = "2.0" -> null
+      - region                                    = "eu-west-1" -> null
+      - request_parameters                        = {} -> null
+      - request_templates                         = {} -> null
+      - timeout_milliseconds                      = 30000 -> null
+        # (8 unchanged attributes hidden)
+    }
+  # aws_apigatewayv2_route.router["GET /tenants"] will be destroyed
+  - resource "aws_apigatewayv2_route" "router" {
+      - api_id                              = "<api-id>" -> null
+      - api_key_required                    = false -> null
+      - authorization_scopes                = [] -> null
+      - authorization_type                  = "AWS_IAM" -> null
+      - id                                  = "<id>" -> null
+      - region                              = "eu-west-1" -> null
+      - request_models                      = {} -> null
+      - route_key                           = "GET /tenants" -> null
+      - target                              = "integrations/ry7u5es" -> null
+        # (4 unchanged attributes hidden)
+    }
+  # aws_apigatewayv2_route.router["GET /traces"] will be destroyed
+  - resource "aws_apigatewayv2_route" "router" {
+      - api_id                              = "<api-id>" -> null
+      - api_key_required                    = false -> null
+      - authorization_scopes                = [] -> null
+      - authorization_type                  = "AWS_IAM" -> null
+      - id                                  = "<id>" -> null
+      - region                              = "eu-west-1" -> null
+      - request_models                      = {} -> null
+      - route_key                           = "GET /traces" -> null
+      - target                              = "integrations/ry7u5es" -> null
+        # (4 unchanged attributes hidden)
+    }
+  # aws_apigatewayv2_route.router["POST /records"] will be destroyed
+  - resource "aws_apigatewayv2_route" "router" {
+      - api_id                              = "<api-id>" -> null
+      - api_key_required                    = false -> null
+      - authorization_scopes                = [] -> null
+      - authorization_type                  = "AWS_IAM" -> null
+      - id                                  = "<id>" -> null
+      - region                              = "eu-west-1" -> null
+      - request_models                      = {} -> null
+      - route_key                           = "POST /records" -> null
+      - target                              = "integrations/ry7u5es" -> null
+        # (4 unchanged attributes hidden)
+    }
+  # aws_apigatewayv2_stage.default will be destroyed
+  - resource "aws_apigatewayv2_stage" "default" {
+      - api_id                = "<api-id>" -> null
+      - arn                   = "arn:aws:apigateway:eu-west-1::/apis/<api-id>/stages/$default" -> null
+      - auto_deploy           = true -> null
+      - deployment_id         = "8mif7x" -> null
+      - execution_arn         = "arn:aws:execute-api:eu-west-1:<account-id>:<api-id>/$default" -> null
+      - id                    = "$default" -> null
+      - invoke_url            = "https://<api-id>.execute-api.eu-west-1.amazonaws.com/" -> null
+      - name                  = "$default" -> null
+      - region                = "eu-west-1" -> null
+      - stage_variables       = {} -> null
+      - tags                  = {} -> null
+      - tags_all              = {
+          - "Project" = "data-residency"
+        } -> null
+        # (2 unchanged attributes hidden)
+      - default_route_settings {
+          - data_trace_enabled       = false -> null
+          - detailed_metrics_enabled = false -> null
+          - throttling_burst_limit   = 0 -> null
+          - throttling_rate_limit    = 0 -> null
+            # (1 unchanged attribute hidden)
+        }
+    }
+  # aws_cloudwatch_log_group.router will be destroyed
+  - resource "aws_cloudwatch_log_group" "router" {
+      - arn                         = "arn:aws:logs:eu-west-1:<account-id>:log-group:/aws/lambda/data-residency-router" -> null
+      - deletion_protection_enabled = false -> null
+      - id                          = "/aws/lambda/data-residency-router" -> null
+      - log_group_class             = "STANDARD" -> null
+      - name                        = "/aws/lambda/data-residency-router" -> null
+      - region                      = "eu-west-1" -> null
+      - retention_in_days           = 7 -> null
+      - skip_destroy                = false -> null
+      - tags                        = {} -> null
+      - tags_all                    = {
+          - "Project" = "data-residency"
+        } -> null
+        # (2 unchanged attributes hidden)
+    }
+  # aws_iam_role.router will be destroyed
+  - resource "aws_iam_role" "router" {
+      - arn                   = "arn:aws:iam::<account-id>:role/data-residency-router" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Service = "lambda.amazonaws.com"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-16T13:20:16Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "data-residency-router" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "data-residency-router" -> null
+      - path                  = "/" -> null
+      - tags                  = {} -> null
+      - tags_all              = {
+          - "Project" = "data-residency"
+        } -> null
+      - unique_id             = "AROA2T7AH2GVVN4H4UN5P" -> null
+        # (3 unchanged attributes hidden)
+      - inline_policy {
+          - name   = "route-to-regional-writers" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action   = [
+                              - "logs:CreateLogStream",
+                              - "logs:PutLogEvents",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:logs:eu-west-1:<account-id>:log-group:/aws/lambda/data-residency-router:log-stream:*"
+                          - Sid      = "WriteOwnLogs"
+                        },
+                      - {
+                          - Action   = [
+                              - "logs:FilterLogEvents",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:logs:eu-west-1:<account-id>:log-group:/aws/lambda/data-residency-router:*"
+                          - Sid      = "ReadOwnSpans"
+                        },
+                      - {
+                          - Action   = [
+                              - "sts:AssumeRole",
+                              - "sts:TagSession",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = [
+                              - "arn:aws:iam::<account-id>:role/data-residency-writer-eu",
+                              - "arn:aws:iam::<account-id>:role/data-residency-writer-us",
+                            ]
+                          - Sid      = "AssumeRegionalWriters"
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+  # aws_iam_role_policy.router will be destroyed
+  - resource "aws_iam_role_policy" "router" {
+      - id          = "data-residency-router:route-to-regional-writers" -> null
+      - name        = "route-to-regional-writers" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "logs:CreateLogStream",
+                          - "logs:PutLogEvents",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:logs:eu-west-1:<account-id>:log-group:/aws/lambda/data-residency-router:log-stream:*"
+                      - Sid      = "WriteOwnLogs"
+                    },
+                  - {
+                      - Action   = [
+                          - "logs:FilterLogEvents",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:logs:eu-west-1:<account-id>:log-group:/aws/lambda/data-residency-router:*"
+                      - Sid      = "ReadOwnSpans"
+                    },
+                  - {
+                      - Action   = [
+                          - "sts:AssumeRole",
+                          - "sts:TagSession",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = [
+                          - "arn:aws:iam::<account-id>:role/data-residency-writer-eu",
+                          - "arn:aws:iam::<account-id>:role/data-residency-writer-us",
+                        ]
+                      - Sid      = "AssumeRegionalWriters"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "data-residency-router" -> null
+        # (1 unchanged attribute hidden)
+    }
+  # aws_lambda_function.router will be destroyed
+  - resource "aws_lambda_function" "router" {
+      - architectures                  = [
+          - "arm64",
+        ] -> null
+      - arn                            = "arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router" -> null
+      - code_sha256                    = "XXXbPUSdy9hgzF1ztmFWUoQIcDjQusp28ToUpRlTYWQ=" -> null
+      - filename                       = "./build/router.zip" -> null
+      - function_name                  = "data-residency-router" -> null
+      - handler                        = "index.handler" -> null
+      - id                             = "data-residency-router" -> null
+      - invoke_arn                     = "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router/invocations" -> null
+      - last_modified                  = "2026-10-16T15:35:31.000+0000" -> null
+      - layers                         = [] -> null
+      - memory_size                    = 256 -> null
+      - package_type                   = "Zip" -> null
+      - publish                        = false -> null
+      - qualified_arn                  = "arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router:$LATEST" -> null
+      - qualified_invoke_arn           = "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router:$LATEST/invocations" -> null
+      - region                         = "eu-west-1" -> null
+      - reserved_concurrent_executions = -1 -> null
+      - response_streaming_invoke_arn  = "arn:aws:apigateway:eu-west-1:lambda:path/2021-11-15/functions/arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router/response-streaming-invocations" -> null
+      - role                           = "arn:aws:iam::<account-id>:role/data-residency-router" -> null
+      - runtime                        = "nodejs22.x" -> null
+      - skip_destroy                   = false -> null
+      - source_code_hash               = "XXXbPUSdy9hgzF1ztmFWUoQIcDjQusp28ToUpRlTYWQ=" -> null
+      - source_code_size               = 412419 -> null
+      - tags                           = {} -> null
+      - tags_all                       = {
+          - "Project" = "data-residency"
+        } -> null
+      - timeout                        = 10 -> null
+      - version                        = "$LATEST" -> null
+        # (7 unchanged attributes hidden)
+      - environment {
+          - variables = {
+              - "DATA_PLANES"     = jsonencode(
+                    {
+                      - eu-west-1 = {
+                          - bucket   = "data-residency-logs-eu-<suffix>"
+                          - role_arn = "arn:aws:iam::<account-id>:role/data-residency-writer-eu"
+                          - table    = "data-residency-pii-eu"
+                          - zone     = "eu"
+                        }
+                      - us-east-1 = {
+                          - bucket   = "data-residency-logs-us-<suffix>"
+                          - role_arn = "arn:aws:iam::<account-id>:role/data-residency-writer-us"
+                          - table    = "data-residency-pii-us"
+                          - zone     = "us"
+                        }
+                    }
+                )
+              - "GIT_COMMIT"      = "7fe5726a31e3aa034225f65df3f3c8630bc02030"
+              - "LOG_GROUP"       = "/aws/lambda/data-residency-router"
+              - "TENANT_REGISTRY" = jsonencode(
+                    {
+                      - synthetic-eu-01 = {
+                          - label          = "Synthetic Tenant EU 01"
+                          - storage_region = "eu-west-1"
+                          - tenant_region  = "eu-west-1"
+                        }
+                      - synthetic-eu-02 = {
+                          - label          = "Synthetic Tenant EU 02"
+                          - storage_region = "eu-west-1"
+                          - tenant_region  = "eu-west-1"
+                        }
+                      - synthetic-us-01 = {
+                          - label          = "Synthetic Tenant US 01"
+                          - storage_region = "us-east-1"
+                          - tenant_region  = "us-east-1"
+                        }
+                    }
+                )
+            } -> null
+        }
+      - ephemeral_storage {
+          - size = 512 -> null
+        }
+      - logging_config {
+          - log_format            = "Text" -> null
+          - log_group             = "/aws/lambda/data-residency-router" -> null
+            # (2 unchanged attributes hidden)
+        }
+      - tracing_config {
+          - mode = "PassThrough" -> null
+        }
+    }
+  # aws_lambda_permission.api will be destroyed
+  - resource "aws_lambda_permission" "api" {
+      - action              = "lambda:InvokeFunction" -> null
+      - function_name       = "data-residency-router" -> null
+      - id                  = "AllowHttpApiInvoke" -> null
+      - principal           = "apigateway.amazonaws.com" -> null
+      - region              = "eu-west-1" -> null
+      - source_arn          = "arn:aws:execute-api:eu-west-1:<account-id>:<api-id>/*/*" -> null
+      - statement_id        = "AllowHttpApiInvoke" -> null
+        # (2 unchanged attributes hidden)
+    }
+  # module.data_plane_eu.aws_dynamodb_table.pii will be destroyed
+  - resource "aws_dynamodb_table" "pii" {
+      - arn                         = "arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu" -> null
+      - billing_mode                = "PAY_PER_REQUEST" -> null
+      - deletion_protection_enabled = false -> null
+      - hash_key                    = "tenant_id" -> null
+      - id                          = "data-residency-pii-eu" -> null
+      - name                        = "data-residency-pii-eu" -> null
+      - range_key                   = "record_id" -> null
+      - read_capacity               = 0 -> null
+      - region                      = "eu-west-1" -> null
+      - stream_enabled              = false -> null
+      - table_class                 = "STANDARD" -> null
+      - tags                        = {
+          - "DataClassification" = "pii"
+          - "HomeRegion"         = "eu-west-1"
+          - "ResidencyZone"      = "eu"
+        } -> null
+      - tags_all                    = {
+          - "DataClassification" = "pii"
+          - "HomeRegion"         = "eu-west-1"
+          - "Project"            = "data-residency"
+          - "ResidencyZone"      = "eu"
+        } -> null
+      - write_capacity              = 0 -> null
+        # (3 unchanged attributes hidden)
+      - attribute {
+          - name = "record_id" -> null
+          - type = "S" -> null
+        }
+      - attribute {
+          - name = "tenant_id" -> null
+          - type = "S" -> null
+        }
+      - point_in_time_recovery {
+          - enabled                 = false -> null
+          - recovery_period_in_days = 0 -> null
+        }
+      - ttl {
+          - enabled        = false -> null
+            # (1 unchanged attribute hidden)
+        }
+    }
+  # module.data_plane_eu.aws_s3_bucket.logs will be destroyed
+  - resource "aws_s3_bucket" "logs" {
+      - arn                         = "arn:aws:s3:::data-residency-logs-eu-<suffix>" -> null
+      - bucket                      = "data-residency-logs-eu-<suffix>" -> null
+      - bucket_domain_name          = "data-residency-logs-eu-<suffix>.s3.amazonaws.com" -> null
+      - bucket_namespace            = "global" -> null
+      - bucket_prefix               = "data-residency-logs-eu-" -> null
+      - bucket_region               = "eu-west-1" -> null
+      - bucket_regional_domain_name = "data-residency-logs-eu-<suffix>.s3.eu-west-1.amazonaws.com" -> null
+      - force_destroy               = true -> null
+      - hosted_zone_id              = "Z1BKCTXD74EZPE" -> null
+      - id                          = "data-residency-logs-eu-<suffix>" -> null
+      - object_lock_enabled         = false -> null
+      - policy                      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "s3:*"
+                      - Condition = {
+                          - Bool = {
+                              - "aws:SecureTransport" = "false"
+                            }
+                        }
+                      - Effect    = "Deny"
+                      - Principal = "*"
+                      - Resource  = [
+                          - "arn:aws:s3:::data-residency-logs-eu-<suffix>/*",
+                          - "arn:aws:s3:::data-residency-logs-eu-<suffix>",
+                        ]
+                      - Sid       = "DenyInsecureTransport"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - region                      = "eu-west-1" -> null
+      - request_payer               = "BucketOwner" -> null
+      - tags                        = {
+          - "DataClassification" = "access-log"
+          - "HomeRegion"         = "eu-west-1"
+          - "ResidencyZone"      = "eu"
+        } -> null
+      - tags_all                    = {
+          - "DataClassification" = "access-log"
+          - "HomeRegion"         = "eu-west-1"
+          - "Project"            = "data-residency"
+          - "ResidencyZone"      = "eu"
+        } -> null
+        # (1 unchanged attribute hidden)
+      - grant {
+          - id          = "1b22cacd60a34b713e2be1d19dd8084fb076c836d7f2fe2f73ad0895b8543b0e" -> null
+          - permissions = [
+              - "FULL_CONTROL",
+            ] -> null
+          - type        = "CanonicalUser" -> null
+            # (1 unchanged attribute hidden)
+        }
+      - server_side_encryption_configuration {
+          - rule {
+              - bucket_key_enabled = false -> null
+              - apply_server_side_encryption_by_default {
+                  - sse_algorithm     = "AES256" -> null
+                    # (1 unchanged attribute hidden)
+                }
+            }
+        }
+      - versioning {
+          - enabled    = false -> null
+          - mfa_delete = false -> null
+        }
+    }
+  # module.data_plane_eu.aws_s3_bucket_ownership_controls.logs will be destroyed
+  - resource "aws_s3_bucket_ownership_controls" "logs" {
+      - bucket = "data-residency-logs-eu-<suffix>" -> null
+      - id     = "data-residency-logs-eu-<suffix>" -> null
+      - region = "eu-west-1" -> null
+      - rule {
+          - object_ownership = "BucketOwnerEnforced" -> null
+        }
+    }
+  # module.data_plane_eu.aws_s3_bucket_policy.logs will be destroyed
+  - resource "aws_s3_bucket_policy" "logs" {
+      - bucket = "data-residency-logs-eu-<suffix>" -> null
+      - id     = "data-residency-logs-eu-<suffix>" -> null
+      - policy = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "s3:*"
+                      - Condition = {
+                          - Bool = {
+                              - "aws:SecureTransport" = "false"
+                            }
+                        }
+                      - Effect    = "Deny"
+                      - Principal = "*"
+                      - Resource  = [
+                          - "arn:aws:s3:::data-residency-logs-eu-<suffix>/*",
+                          - "arn:aws:s3:::data-residency-logs-eu-<suffix>",
+                        ]
+                      - Sid       = "DenyInsecureTransport"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - region = "eu-west-1" -> null
+    }
+  # module.data_plane_eu.aws_s3_bucket_public_access_block.logs will be destroyed
+  - resource "aws_s3_bucket_public_access_block" "logs" {
+      - block_public_acls       = true -> null
+      - block_public_policy     = true -> null
+      - bucket                  = "data-residency-logs-eu-<suffix>" -> null
+      - id                      = "data-residency-logs-eu-<suffix>" -> null
+      - ignore_public_acls      = true -> null
+      - region                  = "eu-west-1" -> null
+      - restrict_public_buckets = true -> null
+    }
+  # module.data_plane_eu.aws_s3_bucket_server_side_encryption_configuration.logs will be destroyed
+  - resource "aws_s3_bucket_server_side_encryption_configuration" "logs" {
+      - bucket                = "data-residency-logs-eu-<suffix>" -> null
+      - id                    = "data-residency-logs-eu-<suffix>" -> null
+      - region                = "eu-west-1" -> null
+        # (1 unchanged attribute hidden)
+      - rule {
+          - blocked_encryption_types = [
+              - "SSE-C",
+            ] -> null
+          - bucket_key_enabled       = false -> null
+          - apply_server_side_encryption_by_default {
+              - sse_algorithm     = "AES256" -> null
+                # (1 unchanged attribute hidden)
+            }
+        }
+    }
+  # module.data_plane_us.aws_dynamodb_table.pii will be destroyed
+  - resource "aws_dynamodb_table" "pii" {
+      - arn                         = "arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us" -> null
+      - billing_mode                = "PAY_PER_REQUEST" -> null
+      - deletion_protection_enabled = false -> null
+      - hash_key                    = "tenant_id" -> null
+      - id                          = "data-residency-pii-us" -> null
+      - name                        = "data-residency-pii-us" -> null
+      - range_key                   = "record_id" -> null
+      - read_capacity               = 0 -> null
+      - region                      = "us-east-1" -> null
+      - stream_enabled              = false -> null
+      - table_class                 = "STANDARD" -> null
+      - tags                        = {
+          - "DataClassification" = "pii"
+          - "HomeRegion"         = "us-east-1"
+          - "ResidencyZone"      = "us"
+        } -> null
+      - tags_all                    = {
+          - "DataClassification" = "pii"
+          - "HomeRegion"         = "us-east-1"
+          - "Project"            = "data-residency"
+          - "ResidencyZone"      = "us"
+        } -> null
+      - write_capacity              = 0 -> null
+        # (3 unchanged attributes hidden)
+      - attribute {
+          - name = "record_id" -> null
+          - type = "S" -> null
+        }
+      - attribute {
+          - name = "tenant_id" -> null
+          - type = "S" -> null
+        }
+      - point_in_time_recovery {
+          - enabled                 = false -> null
+          - recovery_period_in_days = 0 -> null
+        }
+      - ttl {
+          - enabled        = false -> null
+            # (1 unchanged attribute hidden)
+        }
+    }
+  # module.data_plane_us.aws_s3_bucket.logs will be destroyed
+  - resource "aws_s3_bucket" "logs" {
+      - arn                         = "arn:aws:s3:::data-residency-logs-us-<suffix>" -> null
+      - bucket                      = "data-residency-logs-us-<suffix>" -> null
+      - bucket_domain_name          = "data-residency-logs-us-<suffix>.s3.amazonaws.com" -> null
+      - bucket_namespace            = "global" -> null
+      - bucket_prefix               = "data-residency-logs-us-" -> null
+      - bucket_region               = "us-east-1" -> null
+      - bucket_regional_domain_name = "data-residency-logs-us-<suffix>.s3.us-east-1.amazonaws.com" -> null
+      - force_destroy               = true -> null
+      - hosted_zone_id              = "Z3AQBSTGFYJSTF" -> null
+      - id                          = "data-residency-logs-us-<suffix>" -> null
+      - object_lock_enabled         = false -> null
+      - policy                      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "s3:*"
+                      - Condition = {
+                          - Bool = {
+                              - "aws:SecureTransport" = "false"
+                            }
+                        }
+                      - Effect    = "Deny"
+                      - Principal = "*"
+                      - Resource  = [
+                          - "arn:aws:s3:::data-residency-logs-us-<suffix>/*",
+                          - "arn:aws:s3:::data-residency-logs-us-<suffix>",
+                        ]
+                      - Sid       = "DenyInsecureTransport"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - region                      = "us-east-1" -> null
+      - request_payer               = "BucketOwner" -> null
+      - tags                        = {
+          - "DataClassification" = "access-log"
+          - "HomeRegion"         = "us-east-1"
+          - "ResidencyZone"      = "us"
+        } -> null
+      - tags_all                    = {
+          - "DataClassification" = "access-log"
+          - "HomeRegion"         = "us-east-1"
+          - "Project"            = "data-residency"
+          - "ResidencyZone"      = "us"
+        } -> null
+        # (1 unchanged attribute hidden)
+      - grant {
+          - id          = "fe0f5c1c8094216528e6b8ce7a4487a0a173d8e9b5f86a57ef8eac900d8af3c6" -> null
+          - permissions = [
+              - "FULL_CONTROL",
+            ] -> null
+          - type        = "CanonicalUser" -> null
+            # (1 unchanged attribute hidden)
+        }
+      - server_side_encryption_configuration {
+          - rule {
+              - bucket_key_enabled = false -> null
+              - apply_server_side_encryption_by_default {
+                  - sse_algorithm     = "AES256" -> null
+                    # (1 unchanged attribute hidden)
+                }
+            }
+        }
+      - versioning {
+          - enabled    = false -> null
+          - mfa_delete = false -> null
+        }
+    }
+  # module.data_plane_us.aws_s3_bucket_ownership_controls.logs will be destroyed
+  - resource "aws_s3_bucket_ownership_controls" "logs" {
+      - bucket = "data-residency-logs-us-<suffix>" -> null
+      - id     = "data-residency-logs-us-<suffix>" -> null
+      - region = "us-east-1" -> null
+      - rule {
+          - object_ownership = "BucketOwnerEnforced" -> null
+        }
+    }
+  # module.data_plane_us.aws_s3_bucket_policy.logs will be destroyed
+  - resource "aws_s3_bucket_policy" "logs" {
+      - bucket = "data-residency-logs-us-<suffix>" -> null
+      - id     = "data-residency-logs-us-<suffix>" -> null
+      - policy = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "s3:*"
+                      - Condition = {
+                          - Bool = {
+                              - "aws:SecureTransport" = "false"
+                            }
+                        }
+                      - Effect    = "Deny"
+                      - Principal = "*"
+                      - Resource  = [
+                          - "arn:aws:s3:::data-residency-logs-us-<suffix>/*",
+                          - "arn:aws:s3:::data-residency-logs-us-<suffix>",
+                        ]
+                      - Sid       = "DenyInsecureTransport"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - region = "us-east-1" -> null
+    }
+  # module.data_plane_us.aws_s3_bucket_public_access_block.logs will be destroyed
+  - resource "aws_s3_bucket_public_access_block" "logs" {
+      - block_public_acls       = true -> null
+      - block_public_policy     = true -> null
+      - bucket                  = "data-residency-logs-us-<suffix>" -> null
+      - id                      = "data-residency-logs-us-<suffix>" -> null
+      - ignore_public_acls      = true -> null
+      - region                  = "us-east-1" -> null
+      - restrict_public_buckets = true -> null
+    }
+  # module.data_plane_us.aws_s3_bucket_server_side_encryption_configuration.logs will be destroyed
+  - resource "aws_s3_bucket_server_side_encryption_configuration" "logs" {
+      - bucket                = "data-residency-logs-us-<suffix>" -> null
+      - id                    = "data-residency-logs-us-<suffix>" -> null
+      - region                = "us-east-1" -> null
+        # (1 unchanged attribute hidden)
+      - rule {
+          - blocked_encryption_types = [
+              - "SSE-C",
+            ] -> null
+          - bucket_key_enabled       = false -> null
+          - apply_server_side_encryption_by_default {
+              - sse_algorithm     = "AES256" -> null
+                # (1 unchanged attribute hidden)
+            }
+        }
+    }
+  # module.writer_eu.aws_iam_role.writer will be destroyed
+  - resource "aws_iam_role" "writer" {
+      - arn                   = "arn:aws:iam::<account-id>:role/data-residency-writer-eu" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = [
+                          - "sts:AssumeRole",
+                          - "sts:TagSession",
+                        ]
+                      - Condition = {
+                          - "ForAllValues:StringEquals" = {
+                              - "aws:TagKeys" = [
+                                  - "tenant_region",
+                                ]
+                            }
+                        }
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - AWS = "arn:aws:iam::<account-id>:role/data-residency-router"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-16T13:20:25Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "data-residency-writer-eu" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "data-residency-writer-eu" -> null
+      - path                  = "/" -> null
+      - tags                  = {
+          - "ResidencyZone" = "eu"
+        } -> null
+      - tags_all              = {
+          - "Project"       = "data-residency"
+          - "ResidencyZone" = "eu"
+        } -> null
+      - unique_id             = "AROAXCJN3WFKCB5PGOPMN" -> null
+        # (3 unchanged attributes hidden)
+      - inline_policy {
+          - name   = "write-own-data-plane" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action   = [
+                              - "dynamodb:PutItem",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu"
+                          - Sid      = "PutPiiItems"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:PutObject",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-logs-eu-<suffix>/access/*"
+                          - Sid      = "PutAccessLogs"
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+  # module.writer_eu.aws_iam_role_policy.writer will be destroyed
+  - resource "aws_iam_role_policy" "writer" {
+      - id          = "data-residency-writer-eu:write-own-data-plane" -> null
+      - name        = "write-own-data-plane" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "dynamodb:PutItem",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu"
+                      - Sid      = "PutPiiItems"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:PutObject",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-logs-eu-<suffix>/access/*"
+                      - Sid      = "PutAccessLogs"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "data-residency-writer-eu" -> null
+        # (1 unchanged attribute hidden)
+    }
+  # module.writer_us.aws_iam_role.writer will be destroyed
+  - resource "aws_iam_role" "writer" {
+      - arn                   = "arn:aws:iam::<account-id>:role/data-residency-writer-us" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = [
+                          - "sts:AssumeRole",
+                          - "sts:TagSession",
+                        ]
+                      - Condition = {
+                          - "ForAllValues:StringEquals" = {
+                              - "aws:TagKeys" = [
+                                  - "tenant_region",
+                                ]
+                            }
+                        }
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - AWS = "arn:aws:iam::<account-id>:role/data-residency-router"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-16T13:20:25Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "data-residency-writer-us" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "data-residency-writer-us" -> null
+      - path                  = "/" -> null
+      - tags                  = {
+          - "ResidencyZone" = "us"
+        } -> null
+      - tags_all              = {
+          - "Project"       = "data-residency"
+          - "ResidencyZone" = "us"
+        } -> null
+      - unique_id             = "AROA6EUVS4IDJIML4JIXY" -> null
+        # (3 unchanged attributes hidden)
+      - inline_policy {
+          - name   = "write-own-data-plane" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action   = [
+                              - "dynamodb:PutItem",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us"
+                          - Sid      = "PutPiiItems"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:PutObject",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-logs-us-<suffix>/access/*"
+                          - Sid      = "PutAccessLogs"
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+  # module.writer_us.aws_iam_role_policy.writer will be destroyed
+  - resource "aws_iam_role_policy" "writer" {
+      - id          = "data-residency-writer-us:write-own-data-plane" -> null
+      - name        = "write-own-data-plane" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "dynamodb:PutItem",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us"
+                      - Sid      = "PutPiiItems"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:PutObject",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-logs-us-<suffix>/access/*"
+                      - Sid      = "PutAccessLogs"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "data-residency-writer-us" -> null
+        # (1 unchanged attribute hidden)
+    }
+Plan: 0 to add, 0 to change, 27 to destroy.
+Changes to Outputs:
+  - api_endpoint = (sensitive value) -> null
+  - data_planes  = {
+      - eu = {
+          - region = "eu-west-1"
+          - table  = "data-residency-pii-eu"
+        }
+      - us = {
+          - region = "us-east-1"
+          - table  = "data-residency-pii-us"
+        }
+    } -> null
+aws_apigatewayv2_route.router["GET /tenants"]: Destruction complete after 1s
+aws_apigatewayv2_route.router["GET /traces"]: Destruction complete after 1s
+aws_apigatewayv2_route.router["POST /records"]: Destruction complete after 1s
+aws_apigatewayv2_stage.default: Destruction complete after 1s
+aws_lambda_permission.api: Destruction complete after 1s
+aws_apigatewayv2_integration.router: Destruction complete after 0s
+aws_apigatewayv2_api.router: Destruction complete after 1s
+module.data_plane_us.aws_s3_bucket_policy.logs: Destruction complete after 1s
+module.writer_us.aws_iam_role_policy.writer: Destruction complete after 1s
+module.writer_eu.aws_iam_role_policy.writer: Destruction complete after 1s
+module.data_plane_us.aws_s3_bucket_ownership_controls.logs: Destruction complete after 1s
+module.data_plane_eu.aws_s3_bucket_policy.logs: Destruction complete after 1s
+module.data_plane_us.aws_s3_bucket_server_side_encryption_configuration.logs: Destruction complete after 1s
+module.data_plane_eu.aws_s3_bucket_server_side_encryption_configuration.logs: Destruction complete after 1s
+module.data_plane_us.aws_s3_bucket_public_access_block.logs: Destruction complete after 0s
+module.data_plane_eu.aws_s3_bucket_public_access_block.logs: Destruction complete after 0s
+module.writer_eu.aws_iam_role.writer: Destruction complete after 1s
+module.data_plane_eu.aws_s3_bucket_ownership_controls.logs: Destruction complete after 2s
+module.writer_us.aws_iam_role.writer: Destruction complete after 1s
+aws_lambda_function.router: Destruction complete after 6s
+aws_cloudwatch_log_group.router: Destruction complete after 1s
+aws_iam_role_policy.router: Destruction complete after 1s
+module.data_plane_us.aws_s3_bucket.logs: Destruction complete after 2s
+aws_iam_role.router: Destruction complete after 1s
+module.data_plane_eu.aws_s3_bucket.logs: Destruction complete after 2s
+module.data_plane_us.aws_dynamodb_table.pii: Destruction complete after 5s
+module.data_plane_eu.aws_dynamodb_table.pii: Destruction complete after 8s
+Releasing state lock. This may take a few moments...
+Destroy complete! Resources: 27 destroyed.

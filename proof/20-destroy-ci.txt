@@ -1,0 +1,1315 @@
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+Terraform will perform the following actions:
+  # aws_iam_openid_connect_provider.github will be destroyed
+  - resource "aws_iam_openid_connect_provider" "github" {
+      - arn             = "arn:aws:iam::<account-id>:oidc-provider/token.actions.githubusercontent.com" -> null
+      - client_id_list  = [
+          - "sts.amazonaws.com",
+        ] -> null
+      - id              = "arn:aws:iam::<account-id>:oidc-provider/token.actions.githubusercontent.com" -> null
+      - tags            = {} -> null
+      - tags_all        = {
+          - "Project" = "data-residency"
+        } -> null
+      - thumbprint_list = [
+          - "ab9d0263244dd0326eb67015705a667e79cfe998",
+        ] -> null
+      - url             = "token.actions.githubusercontent.com" -> null
+    }
+  # aws_iam_role.apply will be destroyed
+  - resource "aws_iam_role" "apply" {
+      - arn                   = "arn:aws:iam::<account-id>:role/data-residency-ci-apply" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRoleWithWebIdentity"
+                      - Condition = {
+                          - StringEquals = {
+                              - "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+                              - "token.actions.githubusercontent.com:sub" = "repo:davidnfizionly@210562805/data-residency@1422220770:ref:refs/heads/main"
+                            }
+                        }
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Federated = "arn:aws:iam::<account-id>:oidc-provider/token.actions.githubusercontent.com"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-16T13:32:20Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "data-residency-ci-apply" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "data-residency-ci-apply" -> null
+      - path                  = "/" -> null
+      - tags                  = {} -> null
+      - tags_all              = {
+          - "Project" = "data-residency"
+        } -> null
+      - unique_id             = "AROA2T7AH2GVRWMROJOWR" -> null
+        # (3 unchanged attributes hidden)
+      - inline_policy {
+          - name   = "apply-stack" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action    = [
+                              - "s3:ListBucket",
+                            ]
+                          - Condition = {
+                              - StringLike = {
+                                  - "s3:prefix" = [
+                                      - "stack/*",
+                                    ]
+                                }
+                            }
+                          - Effect    = "Allow"
+                          - Resource  = "arn:aws:s3:::data-residency-tfstate-<suffix>"
+                          - Sid       = "ListStackState"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:GetObject",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-tfstate-<suffix>/stack/terraform.tfstate"
+                          - Sid      = "ReadStackState"
+                        },
+                      - {
+                          - Action   = [
+                              - "iam:GetRole",
+                              - "iam:GetRolePolicy",
+                              - "iam:ListRolePolicies",
+                              - "iam:ListAttachedRolePolicies",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:iam::<account-id>:role/data-residency-router"
+                          - Sid      = "ReadRouterRole"
+                        },
+                      - {
+                          - Action   = [
+                              - "lambda:Get*",
+                              - "lambda:List*",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router"
+                          - Sid      = "ReadRouterFunction"
+                        },
+                      - {
+                          - Action   = [
+                              - "apigateway:GET",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = [
+                              - "arn:aws:apigateway:eu-west-1::/apis",
+                              - "arn:aws:apigateway:eu-west-1::/apis/*",
+                            ]
+                          - Sid      = "ReadHttpApi"
+                        },
+                      - {
+                          - Action   = [
+                              - "logs:DescribeLogGroups",
+                              - "logs:ListTagsForResource",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:logs:eu-west-1:<account-id>:log-group:*"
+                          - Sid      = "ReadLogGroup"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:PutObject",
+                              - "s3:DeleteObject",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = [
+                              - "arn:aws:s3:::data-residency-tfstate-<suffix>/stack/terraform.tfstate",
+                              - "arn:aws:s3:::data-residency-tfstate-<suffix>/stack/terraform.tfstate.tflock",
+                            ]
+                          - Sid      = "WriteStackStateAndLock"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:GetObject",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-tfstate-<suffix>/stack/terraform.tfstate.tflock"
+                          - Sid      = "ReadStackLock"
+                        },
+                      - {
+                          - Action   = [
+                              - "iam:CreateRole",
+                              - "iam:DeleteRole",
+                              - "iam:UpdateRole",
+                              - "iam:UpdateAssumeRolePolicy",
+                              - "iam:PutRolePolicy",
+                              - "iam:DeleteRolePolicy",
+                              - "iam:TagRole",
+                              - "iam:UntagRole",
+                              - "iam:ListInstanceProfilesForRole",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:iam::<account-id>:role/data-residency-router"
+                          - Sid      = "ManageRouterRole"
+                        },
+                      - {
+                          - Action    = [
+                              - "iam:PassRole",
+                            ]
+                          - Condition = {
+                              - StringEquals = {
+                                  - "iam:PassedToService" = "lambda.amazonaws.com"
+                                }
+                            }
+                          - Effect    = "Allow"
+                          - Resource  = "arn:aws:iam::<account-id>:role/data-residency-router"
+                          - Sid       = "PassRouterRoleToLambda"
+                        },
+                      - {
+                          - Action   = [
+                              - "lambda:CreateFunction",
+                              - "lambda:UpdateFunctionCode",
+                              - "lambda:UpdateFunctionConfiguration",
+                              - "lambda:DeleteFunction",
+                              - "lambda:AddPermission",
+                              - "lambda:RemovePermission",
+                              - "lambda:TagResource",
+                              - "lambda:UntagResource",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router"
+                          - Sid      = "ManageRouterFunction"
+                        },
+                      - {
+                          - Action   = [
+                              - "apigateway:POST",
+                              - "apigateway:PUT",
+                              - "apigateway:PATCH",
+                              - "apigateway:DELETE",
+                              - "apigateway:TagResource",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = [
+                              - "arn:aws:apigateway:eu-west-1::/apis",
+                              - "arn:aws:apigateway:eu-west-1::/apis/*",
+                              - "arn:aws:apigateway:eu-west-1::/tags/*",
+                            ]
+                          - Sid      = "ManageHttpApi"
+                        },
+                      - {
+                          - Action   = [
+                              - "logs:CreateLogGroup",
+                              - "logs:DeleteLogGroup",
+                              - "logs:PutRetentionPolicy",
+                              - "logs:DeleteRetentionPolicy",
+                              - "logs:TagResource",
+                              - "logs:UntagResource",
+                              - "logs:TagLogGroup",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = [
+                              - "arn:aws:logs:eu-west-1:<account-id>:log-group:/aws/lambda/data-residency-router",
+                              - "arn:aws:logs:eu-west-1:<account-id>:log-group:/aws/lambda/data-residency-router:*",
+                            ]
+                          - Sid      = "ManageLogGroup"
+                        },
+                      - {
+                          - Action   = [
+                              - "sts:AssumeRole",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = [
+                              - "arn:aws:iam::<account-id>:role/data-residency-ci-deploy",
+                              - "arn:aws:iam::<account-id>:role/data-residency-ci-deploy",
+                            ]
+                          - Sid      = "AssumeMemberDeployRoles"
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+  # aws_iam_role.plan will be destroyed
+  - resource "aws_iam_role" "plan" {
+      - arn                   = "arn:aws:iam::<account-id>:role/data-residency-ci-plan" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRoleWithWebIdentity"
+                      - Condition = {
+                          - StringEquals = {
+                              - "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+                              - "token.actions.githubusercontent.com:sub" = "repo:davidnfizionly@210562805/data-residency@1422220770:pull_request"
+                            }
+                        }
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Federated = "arn:aws:iam::<account-id>:oidc-provider/token.actions.githubusercontent.com"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-16T13:32:20Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "data-residency-ci-plan" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "data-residency-ci-plan" -> null
+      - path                  = "/" -> null
+      - tags                  = {} -> null
+      - tags_all              = {
+          - "Project" = "data-residency"
+        } -> null
+      - unique_id             = "AROA2T7AH2GV52AEVN2YJ" -> null
+        # (3 unchanged attributes hidden)
+      - inline_policy {
+          - name   = "plan-stack" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action    = [
+                              - "s3:ListBucket",
+                            ]
+                          - Condition = {
+                              - StringLike = {
+                                  - "s3:prefix" = [
+                                      - "stack/*",
+                                    ]
+                                }
+                            }
+                          - Effect    = "Allow"
+                          - Resource  = "arn:aws:s3:::data-residency-tfstate-<suffix>"
+                          - Sid       = "ListStackState"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:GetObject",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-tfstate-<suffix>/stack/terraform.tfstate"
+                          - Sid      = "ReadStackState"
+                        },
+                      - {
+                          - Action   = [
+                              - "iam:GetRole",
+                              - "iam:GetRolePolicy",
+                              - "iam:ListRolePolicies",
+                              - "iam:ListAttachedRolePolicies",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:iam::<account-id>:role/data-residency-router"
+                          - Sid      = "ReadRouterRole"
+                        },
+                      - {
+                          - Action   = [
+                              - "lambda:Get*",
+                              - "lambda:List*",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router"
+                          - Sid      = "ReadRouterFunction"
+                        },
+                      - {
+                          - Action   = [
+                              - "apigateway:GET",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = [
+                              - "arn:aws:apigateway:eu-west-1::/apis",
+                              - "arn:aws:apigateway:eu-west-1::/apis/*",
+                            ]
+                          - Sid      = "ReadHttpApi"
+                        },
+                      - {
+                          - Action   = [
+                              - "logs:DescribeLogGroups",
+                              - "logs:ListTagsForResource",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:logs:eu-west-1:<account-id>:log-group:*"
+                          - Sid      = "ReadLogGroup"
+                        },
+                      - {
+                          - Action   = [
+                              - "sts:AssumeRole",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = [
+                              - "arn:aws:iam::<account-id>:role/data-residency-ci-plan",
+                              - "arn:aws:iam::<account-id>:role/data-residency-ci-plan",
+                            ]
+                          - Sid      = "AssumeMemberPlanRoles"
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+  # aws_iam_role_policy.apply will be destroyed
+  - resource "aws_iam_role_policy" "apply" {
+      - id          = "data-residency-ci-apply:apply-stack" -> null
+      - name        = "apply-stack" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = [
+                          - "s3:ListBucket",
+                        ]
+                      - Condition = {
+                          - StringLike = {
+                              - "s3:prefix" = [
+                                  - "stack/*",
+                                ]
+                            }
+                        }
+                      - Effect    = "Allow"
+                      - Resource  = "arn:aws:s3:::data-residency-tfstate-<suffix>"
+                      - Sid       = "ListStackState"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:GetObject",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-tfstate-<suffix>/stack/terraform.tfstate"
+                      - Sid      = "ReadStackState"
+                    },
+                  - {
+                      - Action   = [
+                          - "iam:GetRole",
+                          - "iam:GetRolePolicy",
+                          - "iam:ListRolePolicies",
+                          - "iam:ListAttachedRolePolicies",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:iam::<account-id>:role/data-residency-router"
+                      - Sid      = "ReadRouterRole"
+                    },
+                  - {
+                      - Action   = [
+                          - "lambda:Get*",
+                          - "lambda:List*",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router"
+                      - Sid      = "ReadRouterFunction"
+                    },
+                  - {
+                      - Action   = [
+                          - "apigateway:GET",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = [
+                          - "arn:aws:apigateway:eu-west-1::/apis",
+                          - "arn:aws:apigateway:eu-west-1::/apis/*",
+                        ]
+                      - Sid      = "ReadHttpApi"
+                    },
+                  - {
+                      - Action   = [
+                          - "logs:DescribeLogGroups",
+                          - "logs:ListTagsForResource",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:logs:eu-west-1:<account-id>:log-group:*"
+                      - Sid      = "ReadLogGroup"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:PutObject",
+                          - "s3:DeleteObject",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = [
+                          - "arn:aws:s3:::data-residency-tfstate-<suffix>/stack/terraform.tfstate",
+                          - "arn:aws:s3:::data-residency-tfstate-<suffix>/stack/terraform.tfstate.tflock",
+                        ]
+                      - Sid      = "WriteStackStateAndLock"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:GetObject",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-tfstate-<suffix>/stack/terraform.tfstate.tflock"
+                      - Sid      = "ReadStackLock"
+                    },
+                  - {
+                      - Action   = [
+                          - "iam:CreateRole",
+                          - "iam:DeleteRole",
+                          - "iam:UpdateRole",
+                          - "iam:UpdateAssumeRolePolicy",
+                          - "iam:PutRolePolicy",
+                          - "iam:DeleteRolePolicy",
+                          - "iam:TagRole",
+                          - "iam:UntagRole",
+                          - "iam:ListInstanceProfilesForRole",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:iam::<account-id>:role/data-residency-router"
+                      - Sid      = "ManageRouterRole"
+                    },
+                  - {
+                      - Action    = [
+                          - "iam:PassRole",
+                        ]
+                      - Condition = {
+                          - StringEquals = {
+                              - "iam:PassedToService" = "lambda.amazonaws.com"
+                            }
+                        }
+                      - Effect    = "Allow"
+                      - Resource  = "arn:aws:iam::<account-id>:role/data-residency-router"
+                      - Sid       = "PassRouterRoleToLambda"
+                    },
+                  - {
+                      - Action   = [
+                          - "lambda:CreateFunction",
+                          - "lambda:UpdateFunctionCode",
+                          - "lambda:UpdateFunctionConfiguration",
+                          - "lambda:DeleteFunction",
+                          - "lambda:AddPermission",
+                          - "lambda:RemovePermission",
+                          - "lambda:TagResource",
+                          - "lambda:UntagResource",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router"
+                      - Sid      = "ManageRouterFunction"
+                    },
+                  - {
+                      - Action   = [
+                          - "apigateway:POST",
+                          - "apigateway:PUT",
+                          - "apigateway:PATCH",
+                          - "apigateway:DELETE",
+                          - "apigateway:TagResource",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = [
+                          - "arn:aws:apigateway:eu-west-1::/apis",
+                          - "arn:aws:apigateway:eu-west-1::/apis/*",
+                          - "arn:aws:apigateway:eu-west-1::/tags/*",
+                        ]
+                      - Sid      = "ManageHttpApi"
+                    },
+                  - {
+                      - Action   = [
+                          - "logs:CreateLogGroup",
+                          - "logs:DeleteLogGroup",
+                          - "logs:PutRetentionPolicy",
+                          - "logs:DeleteRetentionPolicy",
+                          - "logs:TagResource",
+                          - "logs:UntagResource",
+                          - "logs:TagLogGroup",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = [
+                          - "arn:aws:logs:eu-west-1:<account-id>:log-group:/aws/lambda/data-residency-router",
+                          - "arn:aws:logs:eu-west-1:<account-id>:log-group:/aws/lambda/data-residency-router:*",
+                        ]
+                      - Sid      = "ManageLogGroup"
+                    },
+                  - {
+                      - Action   = [
+                          - "sts:AssumeRole",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = [
+                          - "arn:aws:iam::<account-id>:role/data-residency-ci-deploy",
+                          - "arn:aws:iam::<account-id>:role/data-residency-ci-deploy",
+                        ]
+                      - Sid      = "AssumeMemberDeployRoles"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "data-residency-ci-apply" -> null
+        # (1 unchanged attribute hidden)
+    }
+  # aws_iam_role_policy.plan will be destroyed
+  - resource "aws_iam_role_policy" "plan" {
+      - id          = "data-residency-ci-plan:plan-stack" -> null
+      - name        = "plan-stack" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = [
+                          - "s3:ListBucket",
+                        ]
+                      - Condition = {
+                          - StringLike = {
+                              - "s3:prefix" = [
+                                  - "stack/*",
+                                ]
+                            }
+                        }
+                      - Effect    = "Allow"
+                      - Resource  = "arn:aws:s3:::data-residency-tfstate-<suffix>"
+                      - Sid       = "ListStackState"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:GetObject",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-tfstate-<suffix>/stack/terraform.tfstate"
+                      - Sid      = "ReadStackState"
+                    },
+                  - {
+                      - Action   = [
+                          - "iam:GetRole",
+                          - "iam:GetRolePolicy",
+                          - "iam:ListRolePolicies",
+                          - "iam:ListAttachedRolePolicies",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:iam::<account-id>:role/data-residency-router"
+                      - Sid      = "ReadRouterRole"
+                    },
+                  - {
+                      - Action   = [
+                          - "lambda:Get*",
+                          - "lambda:List*",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:lambda:eu-west-1:<account-id>:function:data-residency-router"
+                      - Sid      = "ReadRouterFunction"
+                    },
+                  - {
+                      - Action   = [
+                          - "apigateway:GET",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = [
+                          - "arn:aws:apigateway:eu-west-1::/apis",
+                          - "arn:aws:apigateway:eu-west-1::/apis/*",
+                        ]
+                      - Sid      = "ReadHttpApi"
+                    },
+                  - {
+                      - Action   = [
+                          - "logs:DescribeLogGroups",
+                          - "logs:ListTagsForResource",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:logs:eu-west-1:<account-id>:log-group:*"
+                      - Sid      = "ReadLogGroup"
+                    },
+                  - {
+                      - Action   = [
+                          - "sts:AssumeRole",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = [
+                          - "arn:aws:iam::<account-id>:role/data-residency-ci-plan",
+                          - "arn:aws:iam::<account-id>:role/data-residency-ci-plan",
+                        ]
+                      - Sid      = "AssumeMemberPlanRoles"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "data-residency-ci-plan" -> null
+        # (1 unchanged attribute hidden)
+    }
+  # module.member_eu.aws_iam_role.deploy will be destroyed
+  - resource "aws_iam_role" "deploy" {
+      - arn                   = "arn:aws:iam::<account-id>:role/data-residency-ci-deploy" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - AWS = "arn:aws:iam::<account-id>:role/data-residency-ci-apply"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-16T13:32:29Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "data-residency-ci-deploy" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "data-residency-ci-deploy" -> null
+      - path                  = "/" -> null
+      - tags                  = {} -> null
+      - tags_all              = {
+          - "Project" = "data-residency"
+        } -> null
+      - unique_id             = "AROAXCJN3WFKPJFBT27WL" -> null
+        # (3 unchanged attributes hidden)
+      - inline_policy {
+          - name   = "deploy-data-plane" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action   = [
+                              - "dynamodb:Describe*",
+                              - "dynamodb:ListTagsOfResource",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu"
+                          - Sid      = "ReadTableConfig"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:GetBucket*",
+                              - "s3:GetEncryptionConfiguration",
+                              - "s3:GetLifecycleConfiguration",
+                              - "s3:GetReplicationConfiguration",
+                              - "s3:GetAccelerateConfiguration",
+                              - "s3:ListBucket",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-logs-eu-*"
+                          - Sid      = "ReadBucketConfig"
+                        },
+                      - {
+                          - Action   = [
+                              - "iam:GetRole",
+                              - "iam:GetRolePolicy",
+                              - "iam:ListRolePolicies",
+                              - "iam:ListAttachedRolePolicies",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-eu"
+                          - Sid      = "ReadWriterRole"
+                        },
+                      - {
+                          - Action   = [
+                              - "dynamodb:CreateTable",
+                              - "dynamodb:UpdateTable",
+                              - "dynamodb:DeleteTable",
+                              - "dynamodb:UpdateContinuousBackups",
+                              - "dynamodb:UpdateTimeToLive",
+                              - "dynamodb:TagResource",
+                              - "dynamodb:UntagResource",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu"
+                          - Sid      = "ManageTable"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:CreateBucket",
+                              - "s3:DeleteBucket",
+                              - "s3:PutBucketPolicy",
+                              - "s3:DeleteBucketPolicy",
+                              - "s3:PutEncryptionConfiguration",
+                              - "s3:PutBucketPublicAccessBlock",
+                              - "s3:PutBucketOwnershipControls",
+                              - "s3:PutBucketTagging",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-logs-eu-*"
+                          - Sid      = "ManageBucket"
+                        },
+                      - {
+                          - Action   = [
+                              - "iam:CreateRole",
+                              - "iam:DeleteRole",
+                              - "iam:UpdateRole",
+                              - "iam:UpdateAssumeRolePolicy",
+                              - "iam:PutRolePolicy",
+                              - "iam:DeleteRolePolicy",
+                              - "iam:TagRole",
+                              - "iam:UntagRole",
+                              - "iam:ListInstanceProfilesForRole",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-eu"
+                          - Sid      = "ManageWriterRole"
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+  # module.member_eu.aws_iam_role.plan will be destroyed
+  - resource "aws_iam_role" "plan" {
+      - arn                   = "arn:aws:iam::<account-id>:role/data-residency-ci-plan" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - AWS = "arn:aws:iam::<account-id>:role/data-residency-ci-plan"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-16T13:32:29Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "data-residency-ci-plan" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "data-residency-ci-plan" -> null
+      - path                  = "/" -> null
+      - tags                  = {} -> null
+      - tags_all              = {
+          - "Project" = "data-residency"
+        } -> null
+      - unique_id             = "AROAXCJN3WFKNP65GHYZ7" -> null
+        # (3 unchanged attributes hidden)
+      - inline_policy {
+          - name   = "read-data-plane-config" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action   = [
+                              - "dynamodb:Describe*",
+                              - "dynamodb:ListTagsOfResource",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu"
+                          - Sid      = "ReadTableConfig"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:GetBucket*",
+                              - "s3:GetEncryptionConfiguration",
+                              - "s3:GetLifecycleConfiguration",
+                              - "s3:GetReplicationConfiguration",
+                              - "s3:GetAccelerateConfiguration",
+                              - "s3:ListBucket",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-logs-eu-*"
+                          - Sid      = "ReadBucketConfig"
+                        },
+                      - {
+                          - Action   = [
+                              - "iam:GetRole",
+                              - "iam:GetRolePolicy",
+                              - "iam:ListRolePolicies",
+                              - "iam:ListAttachedRolePolicies",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-eu"
+                          - Sid      = "ReadWriterRole"
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+  # module.member_eu.aws_iam_role_policy.deploy will be destroyed
+  - resource "aws_iam_role_policy" "deploy" {
+      - id          = "data-residency-ci-deploy:deploy-data-plane" -> null
+      - name        = "deploy-data-plane" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "dynamodb:Describe*",
+                          - "dynamodb:ListTagsOfResource",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu"
+                      - Sid      = "ReadTableConfig"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:GetBucket*",
+                          - "s3:GetEncryptionConfiguration",
+                          - "s3:GetLifecycleConfiguration",
+                          - "s3:GetReplicationConfiguration",
+                          - "s3:GetAccelerateConfiguration",
+                          - "s3:ListBucket",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-logs-eu-*"
+                      - Sid      = "ReadBucketConfig"
+                    },
+                  - {
+                      - Action   = [
+                          - "iam:GetRole",
+                          - "iam:GetRolePolicy",
+                          - "iam:ListRolePolicies",
+                          - "iam:ListAttachedRolePolicies",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-eu"
+                      - Sid      = "ReadWriterRole"
+                    },
+                  - {
+                      - Action   = [
+                          - "dynamodb:CreateTable",
+                          - "dynamodb:UpdateTable",
+                          - "dynamodb:DeleteTable",
+                          - "dynamodb:UpdateContinuousBackups",
+                          - "dynamodb:UpdateTimeToLive",
+                          - "dynamodb:TagResource",
+                          - "dynamodb:UntagResource",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu"
+                      - Sid      = "ManageTable"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:CreateBucket",
+                          - "s3:DeleteBucket",
+                          - "s3:PutBucketPolicy",
+                          - "s3:DeleteBucketPolicy",
+                          - "s3:PutEncryptionConfiguration",
+                          - "s3:PutBucketPublicAccessBlock",
+                          - "s3:PutBucketOwnershipControls",
+                          - "s3:PutBucketTagging",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-logs-eu-*"
+                      - Sid      = "ManageBucket"
+                    },
+                  - {
+                      - Action   = [
+                          - "iam:CreateRole",
+                          - "iam:DeleteRole",
+                          - "iam:UpdateRole",
+                          - "iam:UpdateAssumeRolePolicy",
+                          - "iam:PutRolePolicy",
+                          - "iam:DeleteRolePolicy",
+                          - "iam:TagRole",
+                          - "iam:UntagRole",
+                          - "iam:ListInstanceProfilesForRole",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-eu"
+                      - Sid      = "ManageWriterRole"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "data-residency-ci-deploy" -> null
+        # (1 unchanged attribute hidden)
+    }
+  # module.member_eu.aws_iam_role_policy.plan will be destroyed
+  - resource "aws_iam_role_policy" "plan" {
+      - id          = "data-residency-ci-plan:read-data-plane-config" -> null
+      - name        = "read-data-plane-config" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "dynamodb:Describe*",
+                          - "dynamodb:ListTagsOfResource",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu"
+                      - Sid      = "ReadTableConfig"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:GetBucket*",
+                          - "s3:GetEncryptionConfiguration",
+                          - "s3:GetLifecycleConfiguration",
+                          - "s3:GetReplicationConfiguration",
+                          - "s3:GetAccelerateConfiguration",
+                          - "s3:ListBucket",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-logs-eu-*"
+                      - Sid      = "ReadBucketConfig"
+                    },
+                  - {
+                      - Action   = [
+                          - "iam:GetRole",
+                          - "iam:GetRolePolicy",
+                          - "iam:ListRolePolicies",
+                          - "iam:ListAttachedRolePolicies",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-eu"
+                      - Sid      = "ReadWriterRole"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "data-residency-ci-plan" -> null
+        # (1 unchanged attribute hidden)
+    }
+  # module.member_us.aws_iam_role.deploy will be destroyed
+  - resource "aws_iam_role" "deploy" {
+      - arn                   = "arn:aws:iam::<account-id>:role/data-residency-ci-deploy" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - AWS = "arn:aws:iam::<account-id>:role/data-residency-ci-apply"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-16T13:32:29Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "data-residency-ci-deploy" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "data-residency-ci-deploy" -> null
+      - path                  = "/" -> null
+      - tags                  = {} -> null
+      - tags_all              = {
+          - "Project" = "data-residency"
+        } -> null
+      - unique_id             = "AROA6EUVS4IDJSZVPEZNB" -> null
+        # (3 unchanged attributes hidden)
+      - inline_policy {
+          - name   = "deploy-data-plane" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action   = [
+                              - "dynamodb:Describe*",
+                              - "dynamodb:ListTagsOfResource",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us"
+                          - Sid      = "ReadTableConfig"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:GetBucket*",
+                              - "s3:GetEncryptionConfiguration",
+                              - "s3:GetLifecycleConfiguration",
+                              - "s3:GetReplicationConfiguration",
+                              - "s3:GetAccelerateConfiguration",
+                              - "s3:ListBucket",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-logs-us-*"
+                          - Sid      = "ReadBucketConfig"
+                        },
+                      - {
+                          - Action   = [
+                              - "iam:GetRole",
+                              - "iam:GetRolePolicy",
+                              - "iam:ListRolePolicies",
+                              - "iam:ListAttachedRolePolicies",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-us"
+                          - Sid      = "ReadWriterRole"
+                        },
+                      - {
+                          - Action   = [
+                              - "dynamodb:CreateTable",
+                              - "dynamodb:UpdateTable",
+                              - "dynamodb:DeleteTable",
+                              - "dynamodb:UpdateContinuousBackups",
+                              - "dynamodb:UpdateTimeToLive",
+                              - "dynamodb:TagResource",
+                              - "dynamodb:UntagResource",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us"
+                          - Sid      = "ManageTable"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:CreateBucket",
+                              - "s3:DeleteBucket",
+                              - "s3:PutBucketPolicy",
+                              - "s3:DeleteBucketPolicy",
+                              - "s3:PutEncryptionConfiguration",
+                              - "s3:PutBucketPublicAccessBlock",
+                              - "s3:PutBucketOwnershipControls",
+                              - "s3:PutBucketTagging",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-logs-us-*"
+                          - Sid      = "ManageBucket"
+                        },
+                      - {
+                          - Action   = [
+                              - "iam:CreateRole",
+                              - "iam:DeleteRole",
+                              - "iam:UpdateRole",
+                              - "iam:UpdateAssumeRolePolicy",
+                              - "iam:PutRolePolicy",
+                              - "iam:DeleteRolePolicy",
+                              - "iam:TagRole",
+                              - "iam:UntagRole",
+                              - "iam:ListInstanceProfilesForRole",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-us"
+                          - Sid      = "ManageWriterRole"
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+  # module.member_us.aws_iam_role.plan will be destroyed
+  - resource "aws_iam_role" "plan" {
+      - arn                   = "arn:aws:iam::<account-id>:role/data-residency-ci-plan" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - AWS = "arn:aws:iam::<account-id>:role/data-residency-ci-plan"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-16T13:32:33Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "data-residency-ci-plan" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "data-residency-ci-plan" -> null
+      - path                  = "/" -> null
+      - tags                  = {} -> null
+      - tags_all              = {
+          - "Project" = "data-residency"
+        } -> null
+      - unique_id             = "AROA6EUVS4IDLLOQPGSL6" -> null
+        # (3 unchanged attributes hidden)
+      - inline_policy {
+          - name   = "read-data-plane-config" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action   = [
+                              - "dynamodb:Describe*",
+                              - "dynamodb:ListTagsOfResource",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us"
+                          - Sid      = "ReadTableConfig"
+                        },
+                      - {
+                          - Action   = [
+                              - "s3:GetBucket*",
+                              - "s3:GetEncryptionConfiguration",
+                              - "s3:GetLifecycleConfiguration",
+                              - "s3:GetReplicationConfiguration",
+                              - "s3:GetAccelerateConfiguration",
+                              - "s3:ListBucket",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:s3:::data-residency-logs-us-*"
+                          - Sid      = "ReadBucketConfig"
+                        },
+                      - {
+                          - Action   = [
+                              - "iam:GetRole",
+                              - "iam:GetRolePolicy",
+                              - "iam:ListRolePolicies",
+                              - "iam:ListAttachedRolePolicies",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-us"
+                          - Sid      = "ReadWriterRole"
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+  # module.member_us.aws_iam_role_policy.deploy will be destroyed
+  - resource "aws_iam_role_policy" "deploy" {
+      - id          = "data-residency-ci-deploy:deploy-data-plane" -> null
+      - name        = "deploy-data-plane" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "dynamodb:Describe*",
+                          - "dynamodb:ListTagsOfResource",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us"
+                      - Sid      = "ReadTableConfig"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:GetBucket*",
+                          - "s3:GetEncryptionConfiguration",
+                          - "s3:GetLifecycleConfiguration",
+                          - "s3:GetReplicationConfiguration",
+                          - "s3:GetAccelerateConfiguration",
+                          - "s3:ListBucket",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-logs-us-*"
+                      - Sid      = "ReadBucketConfig"
+                    },
+                  - {
+                      - Action   = [
+                          - "iam:GetRole",
+                          - "iam:GetRolePolicy",
+                          - "iam:ListRolePolicies",
+                          - "iam:ListAttachedRolePolicies",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-us"
+                      - Sid      = "ReadWriterRole"
+                    },
+                  - {
+                      - Action   = [
+                          - "dynamodb:CreateTable",
+                          - "dynamodb:UpdateTable",
+                          - "dynamodb:DeleteTable",
+                          - "dynamodb:UpdateContinuousBackups",
+                          - "dynamodb:UpdateTimeToLive",
+                          - "dynamodb:TagResource",
+                          - "dynamodb:UntagResource",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us"
+                      - Sid      = "ManageTable"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:CreateBucket",
+                          - "s3:DeleteBucket",
+                          - "s3:PutBucketPolicy",
+                          - "s3:DeleteBucketPolicy",
+                          - "s3:PutEncryptionConfiguration",
+                          - "s3:PutBucketPublicAccessBlock",
+                          - "s3:PutBucketOwnershipControls",
+                          - "s3:PutBucketTagging",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-logs-us-*"
+                      - Sid      = "ManageBucket"
+                    },
+                  - {
+                      - Action   = [
+                          - "iam:CreateRole",
+                          - "iam:DeleteRole",
+                          - "iam:UpdateRole",
+                          - "iam:UpdateAssumeRolePolicy",
+                          - "iam:PutRolePolicy",
+                          - "iam:DeleteRolePolicy",
+                          - "iam:TagRole",
+                          - "iam:UntagRole",
+                          - "iam:ListInstanceProfilesForRole",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-us"
+                      - Sid      = "ManageWriterRole"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "data-residency-ci-deploy" -> null
+        # (1 unchanged attribute hidden)
+    }
+  # module.member_us.aws_iam_role_policy.plan will be destroyed
+  - resource "aws_iam_role_policy" "plan" {
+      - id          = "data-residency-ci-plan:read-data-plane-config" -> null
+      - name        = "read-data-plane-config" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "dynamodb:Describe*",
+                          - "dynamodb:ListTagsOfResource",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us"
+                      - Sid      = "ReadTableConfig"
+                    },
+                  - {
+                      - Action   = [
+                          - "s3:GetBucket*",
+                          - "s3:GetEncryptionConfiguration",
+                          - "s3:GetLifecycleConfiguration",
+                          - "s3:GetReplicationConfiguration",
+                          - "s3:GetAccelerateConfiguration",
+                          - "s3:ListBucket",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:s3:::data-residency-logs-us-*"
+                      - Sid      = "ReadBucketConfig"
+                    },
+                  - {
+                      - Action   = [
+                          - "iam:GetRole",
+                          - "iam:GetRolePolicy",
+                          - "iam:ListRolePolicies",
+                          - "iam:ListAttachedRolePolicies",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:iam::<account-id>:role/data-residency-writer-us"
+                      - Sid      = "ReadWriterRole"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "data-residency-ci-plan" -> null
+        # (1 unchanged attribute hidden)
+    }
+Plan: 0 to add, 0 to change, 13 to destroy.
+Changes to Outputs:
+  - apply_role_arn = "arn:aws:iam::<account-id>:role/data-residency-ci-apply" -> null
+  - plan_role_arn  = "arn:aws:iam::<account-id>:role/data-residency-ci-plan" -> null
+aws_iam_role_policy.apply: Destruction complete after 1s
+aws_iam_role_policy.plan: Destruction complete after 1s
+module.member_eu.aws_iam_role_policy.deploy: Destruction complete after 1s
+module.member_eu.aws_iam_role_policy.plan: Destruction complete after 1s
+module.member_us.aws_iam_role_policy.plan: Destruction complete after 1s
+module.member_us.aws_iam_role_policy.deploy: Destruction complete after 1s
+module.member_eu.aws_iam_role.plan: Destruction complete after 1s
+module.member_eu.aws_iam_role.deploy: Destruction complete after 1s
+module.member_us.aws_iam_role.plan: Destruction complete after 0s
+module.member_us.aws_iam_role.deploy: Destruction complete after 0s
+aws_iam_role.plan: Destruction complete after 1s
+aws_iam_role.apply: Destruction complete after 1s
+aws_iam_openid_connect_provider.github: Destruction complete after 1s
+Releasing state lock. This may take a few moments...
+Destroy complete! Resources: 13 destroyed.

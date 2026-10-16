@@ -1,0 +1,22 @@
+Post-destroy check (stack and ci), 2026-10-16T15:38:20Z
+management eu-west-1 tagged: none
+management eu-west-1 lambda=0 apis=0 tables=0 loggroups=0
+management us-east-1 tagged: arn:aws:organizations::<account-id>:account/o-<id>/<account-id> arn:aws:organizations::<account-id>:account/o-<id>/<account-id> arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id> arn:aws:budgets::<account-id>:budget/data-residency-monthly arn:aws:s3:::data-residency-tfstate-<suffix> arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id> 
+management us-east-1 lambda=0 apis=0 tables=0 loggroups=0
+management buckets: data-residency-tfstate-<suffix>
+management IAM roles named data-residency*: 
+management OIDC providers: 0
+eu-account eu-west-1 tagged: none
+eu-account eu-west-1 lambda=0 apis=0 tables=0 loggroups=0
+eu-account us-east-1 tagged: none
+eu-account us-east-1 lambda=0 apis=0 tables=0 loggroups=0
+eu-account buckets: 
+eu-account IAM roles named data-residency*: 
+eu-account OIDC providers: 0
+us-account eu-west-1 tagged: none
+us-account eu-west-1 lambda=0 apis=0 tables=0 loggroups=0
+us-account us-east-1 tagged: none
+us-account us-east-1 lambda=0 apis=0 tables=0 loggroups=0
+us-account buckets: 
+us-account IAM roles named data-residency*: 
+us-account OIDC providers: 0
