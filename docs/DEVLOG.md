@@ -23,3 +23,18 @@ Real problems, root causes and fixes, written as they occur. Corrections of earl
 ## Phase 2 - Tenant-tag deny tested only without tags so far
 
 - What: `OrganizationAccountAccessRole` trusts `sts:AssumeRole` only, not `sts:TagSession`, so the SCP tests in `proof/04-scp-deny-tests.txt` cover the region lock and the "no tag" case. The "wrong tag" case (EU tenant written into the US account) needs the regional writer role, whose trust allows session tags. It is tested in Phase 4.
+
+## Phase 4 - Every write failed with "identity.expiration.getTime is not a function"
+
+- What: the first router deployment answered HTTP 500 on every `POST /records`, for EU and US tenants alike. The spans showed `sts.AssumeRole OK` then `dynamodb.PutItem ERROR`.
+- Root cause: the router caches the assumed writer-role credentials and stored `expiration` as a number (milliseconds). AWS SDK for JavaScript v3 expects a `Date` object there and calls `getTime()` on it before signing.
+- Fix: keep `Expiration` as the `Date` returned by STS and compare with `getTime()`. Redeployed through the auto-apply gate (1 change, Lambda code only). Rerun in `proof/08-router-cli-tests.txt`. The failed attempts stay visible in the trace history as `outcome: error`.
+
+## Phase 4 - Redaction regex masked part of a hash
+
+- What: the test output redaction replaced any 12-digit run with `<account-id>`, which also hit 12 consecutive digits inside the registry SHA-256.
+- Fix: the regex now requires a non-alphanumeric boundary on both sides, in the test script and in the router's error-message masking.
+
+## Phase 4 - Tenant-tag SCP case now tested
+
+- The deliberate misroute (EU tenant forced to us-east-1 by direct invocation) assumed `data-residency-writer-us` with session tag `tenant_region=eu`; the US account SCP denied `dynamodb:PutItem` explicitly. This closes the gap noted in Phase 2.

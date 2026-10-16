@@ -1,0 +1,26 @@
+Run at 2026-10-16T13:23:14Z
+=== 1. GET /tenants (signed)
+{"tenants":[{"tenant_id":"synthetic-eu-01","label":"Synthetic Tenant EU 01","tenant_region":"eu-west-1","storage_region":"eu-west-1","table":"data-residency-pii-eu"},{"tenant_id":"synthetic-eu-02","label":"Synthetic Tenant EU 02","tenant_region":"eu-west-1","storage_region":"eu-west-1","table":"data-residency-pii-eu"},{"tenant_id":"synthetic-us-01","label":"Synthetic Tenant US 01","tenant_region":"us-east-1","storage_region":"us-east-1","table":"data-residency-pii-us"}],"registry_sha256":"6bc3be14b57b313d89d5a5c52bfabdec558924233369d172dcdfcf7e09029251","git_commit":"2c02b2c"}
+HTTP 200, 1.322972s
+=== 2. POST /records for synthetic-eu-01 (signed)
+{"trace_id":"77106691ddabac2bada0480e162b98cc","record_id":"84321683-36bd-4fc1-812b-1efcc2991f6a","tenant_id":"synthetic-eu-01","tenant_region":"eu-west-1","storage_region":"eu-west-1","compliant":true,"outcome":"stored"}
+HTTP 201, 1.493955s
+=== 2. POST /records for synthetic-us-01 (signed)
+{"trace_id":"a51d509d2f9390129a4ed621664333a7","record_id":"c3eda085-2869-42d4-9942-128104f6489c","tenant_id":"synthetic-us-01","tenant_region":"us-east-1","storage_region":"us-east-1","compliant":true,"outcome":"stored"}
+HTTP 201, 1.532034s
+=== 3. POST /records without a signature: expect 403 from API Gateway IAM auth
+{"message":"Forbidden"}
+HTTP 403
+=== 4. Deliberate mismatch: EU tenant forced to us-east-1 by direct invocation: expect SCP deny
+{"statusCode":403,"body":{"trace_id":"08fd55c9506fdbeb5911fe030339a814","tenant_id":"synthetic-eu-01","tenant_region":"eu-west-1","storage_region":"us-east-1","outcome":"denied_by_scp","error":"AccessDeniedException: User: arn:aws:sts::<account-id>:assumed-role/data-residency-writer-us/router-eu is not authorized to perform: dynamodb:PutItem on resource: arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us with an explicit deny in a service control policy: arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id>"}}
+=== 5. GET /traces for synthetic-eu-01 (signed): root span residency attributes, newest first
+{"trace_id":"08fd55c9506fdbeb5911fe030339a814","status":"ERROR","tenant_region":"eu-west-1","data_classification":"pii","storage_region":"us-east-1","compliant":false,"outcome":"denied_by_scp","misroute":true,"spans":["pii.write ERROR us-east-1","sts.AssumeRole OK -","dynamodb.PutItem ERROR us-east-1"]}
+{"trace_id":"77106691ddabac2bada0480e162b98cc","status":"OK","tenant_region":"eu-west-1","data_classification":"pii","storage_region":"eu-west-1","compliant":true,"outcome":"stored","misroute":false,"spans":["pii.write OK eu-west-1","sts.AssumeRole OK -","dynamodb.PutItem OK eu-west-1","s3.PutObject OK eu-west-1"]}
+{"trace_id":"98872751ad22d8d67707ac8599bc8487","status":"ERROR","tenant_region":"eu-west-1","data_classification":"pii","storage_region":"us-east-1","compliant":false,"outcome":"error","misroute":true,"spans":["sts.AssumeRole OK -","pii.write ERROR us-east-1","dynamodb.PutItem ERROR us-east-1"]}
+=== 6. Where the records are: tenant_id values stored per account and region
+eu account, data-residency-pii-eu in eu-west-1: synthetic-eu-01
+eu account, data-residency-pii-eu in us-east-1: 
+aws: [ERROR]: An error occurred (ResourceNotFoundException) when calling the Scan operation: Requested resource not found
+us account, data-residency-pii-us in eu-west-1: 
+aws: [ERROR]: An error occurred (ResourceNotFoundException) when calling the Scan operation: Requested resource not found
+us account, data-residency-pii-us in us-east-1: synthetic-us-01

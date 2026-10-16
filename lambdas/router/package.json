@@ -1,0 +1,21 @@
+{
+  "name": "data-residency-router",
+  "private": true,
+  "description": "Regional router: writes each tenant's PII only to its assigned region and emits residency spans",
+  "scripts": {
+    "build": "esbuild src/index.mjs --bundle --platform=node --target=node22 --format=cjs --outfile=dist/index.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudwatch-logs": "^3.1152.0",
+    "@aws-sdk/client-dynamodb": "^3.1152.0",
+    "@aws-sdk/client-s3": "^3.1152.0",
+    "@aws-sdk/client-sts": "^3.1152.0",
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/core": "^2.12.0",
+    "@opentelemetry/resources": "^2.12.0",
+    "@opentelemetry/sdk-trace-base": "^2.12.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

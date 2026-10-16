@@ -1,0 +1,47 @@
+Plan summary for stack:
+  # aws_apigatewayv2_api.router will be created
+  # aws_apigatewayv2_integration.router will be created
+  # aws_apigatewayv2_route.router["GET /tenants"] will be created
+  # aws_apigatewayv2_route.router["GET /traces"] will be created
+  # aws_apigatewayv2_route.router["POST /records"] will be created
+  # aws_apigatewayv2_stage.default will be created
+  # aws_cloudwatch_log_group.router will be created
+  # aws_iam_role.router will be created
+  # aws_iam_role_policy.router will be created
+  # aws_lambda_function.router will be created
+  # aws_lambda_permission.api will be created
+  # module.writer_eu.aws_iam_role.writer will be created
+  # module.writer_eu.aws_iam_role_policy.writer will be created
+  # module.writer_us.aws_iam_role.writer will be created
+  # module.writer_us.aws_iam_role_policy.writer will be created
+Plan: 15 to add, 0 to change, 0 to destroy.
+AUTO-APPLY ALLOWED: no delete, no account/organization/SCP change, no undocumented IAM wildcard
+aws_apigatewayv2_api.router: Creation complete after 1s [id=<id>]
+aws_cloudwatch_log_group.router: Creation complete after 1s [id=/aws/lambda/data-residency-router]
+aws_iam_role.router: Creation complete after 1s [id=data-residency-router]
+aws_iam_role_policy.router: Creation complete after 1s [id=data-residency-router:route-to-regional-writers]
+aws_apigatewayv2_stage.default: Creation complete after 1s [id=$default]
+module.writer_us.aws_iam_role.writer: Creation complete after 9s [id=data-residency-writer-us]
+module.writer_eu.aws_iam_role.writer: Creation complete after 9s [id=data-residency-writer-eu]
+module.writer_us.aws_iam_role_policy.writer: Creation complete after 1s [id=data-residency-writer-us:write-own-data-plane]
+module.writer_eu.aws_iam_role_policy.writer: Creation complete after 1s [id=data-residency-writer-eu:write-own-data-plane]
+aws_lambda_function.router: Creation complete after 15s [id=data-residency-router]
+aws_lambda_permission.api: Creation complete after 1s [id=AllowHttpApiInvoke]
+aws_apigatewayv2_integration.router: Creation complete after 1s [id=<id>]
+aws_apigatewayv2_route.router["POST /records"]: Creation complete after 0s [id=<id>]
+aws_apigatewayv2_route.router["GET /traces"]: Creation complete after 0s [id=<id>]
+aws_apigatewayv2_route.router["GET /tenants"]: Creation complete after 0s [id=<id>]
+Releasing state lock. This may take a few moments...
+Apply complete! Resources: 15 added, 0 changed, 0 destroyed.
+Outputs:
+api_endpoint = <sensitive>
+data_planes = {
+  "eu" = {
+    "region" = "eu-west-1"
+    "table" = "data-residency-pii-eu"
+  }
+  "us" = {
+    "region" = "us-east-1"
+    "table" = "data-residency-pii-us"
+  }
+}

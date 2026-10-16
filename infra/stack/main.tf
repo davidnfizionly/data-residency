@@ -14,6 +14,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 6.0"
     }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "~> 2.7"
+    }
   }
 }
 
@@ -26,9 +30,9 @@ locals {
   default_tags = { Project = "data-residency" }
 }
 
-# Management account: router, API, tenant registry.
+# Management account, eu-west-1: router, API, span log group.
 provider "aws" {
-  region = "us-east-1"
+  region = "eu-west-1"
 
   default_tags {
     tags = local.default_tags
