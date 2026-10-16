@@ -63,3 +63,15 @@ Real problems, root causes and fixes, written as they occur. Corrections of earl
 - What: after "Write a test record now", the newest trace was sometimes missing from the evidence list.
 - Root cause: spans reach CloudWatch Logs a few seconds after the Lambda writes them; a fixed 4-second wait was not always enough.
 - Fix: the console polls until the trace ID returned by the write appears (up to 30 seconds). The root span is also listed first, since spans that start in the same millisecond had no stable order.
+
+## Phase 6 - Personal e-mail written into public history by GitHub merges
+
+- What: after pull requests #1 and #4 were merged with "Rebase and merge", the two resulting commits on `main` had the account's primary personal e-mail as committer, and the "Update branch" button on #4 created a merge commit with the same address as author. The repository is public, so the address was visible in the history.
+- Root cause: GitHub writes commits created on its side (rebase merges, branch updates) with the account's primary e-mail unless "Keep my email addresses private" is enabled. The local pre-push guard only sees commits pushed from this machine, so it could not catch them.
+- Fix:
+  - "Keep my email addresses private" and "Block command line pushes that expose my email" were enabled on the GitHub account.
+  - The two commits on `main` were rewritten with the noreply committer address (same trees, new SHAs), force-pushed once with admin enforcement and force pushes enabled only for that push, and the full branch protection was restored right after (14:36:09 UTC).
+  - The merged branches `phase6/audit-console` and `proof/pipeline-first-runs` were deleted.
+  - Check after the fix: every commit on `main` has the noreply address as author and committer; no other branch exists.
+- Remaining exposure: GitHub keeps `refs/pull/4/head` (read-only) pointing at the branch-update merge commit, and old commit SHAs can stay reachable by direct URL until GitHub's garbage collection. Only GitHub Support can purge them.
+- Prevention: after every merge, the commits on `main` are checked through the API for any non-noreply author or committer.
