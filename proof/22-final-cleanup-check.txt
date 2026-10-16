@@ -1,0 +1,46 @@
+Final cleanup check, 2026-10-16T15:58:20Z
+management eu-west-1 tagged Project=data-residency: none
+management eu-west-1 lambda=0 http-apis=0 dynamodb-tables=0 log-groups-data-residency=0
+management us-east-1 tagged Project=data-residency: arn:aws:organizations::<account-id>:account/o-<id>/<account-id> arn:aws:organizations::<account-id>:account/o-<id>/<account-id>
+management us-east-1 lambda=0 http-apis=0 dynamodb-tables=0 log-groups-data-residency=0
+management s3 buckets named data-residency*: 0
+management IAM roles named data-residency*: 0
+management IAM OIDC providers: 0
+management budgets: 0
+management SCPs: FullAWSAccess
+organization member accounts kept (choice B): 2
+eu account SCPs attached: FullAWSAccess
+eu-account eu-west-1 tagged Project=data-residency: none
+eu-account eu-west-1 lambda=0 http-apis=0 dynamodb-tables=0 log-groups-data-residency=0
+eu-account us-east-1 tagged Project=data-residency: none
+eu-account us-east-1 lambda=0 http-apis=0 dynamodb-tables=0 log-groups-data-residency=0
+eu-account s3 buckets named data-residency*: 0
+eu-account IAM roles named data-residency*: 0
+eu-account IAM OIDC providers: 0
+us account SCPs attached: FullAWSAccess
+us-account eu-west-1 tagged Project=data-residency: none
+us-account eu-west-1 lambda=0 http-apis=0 dynamodb-tables=0 log-groups-data-residency=0
+us-account us-east-1 tagged Project=data-residency: none
+us-account us-east-1 lambda=0 http-apis=0 dynamodb-tables=0 log-groups-data-residency=0
+us-account s3 buckets named data-residency*: 0
+us-account IAM roles named data-residency*: 0
+us-account IAM OIDC providers: 0
+
+=== infra/org targeted destroy (SCP attachments and policies only), 15:44 UTC
+aws_organizations_policy_attachment.residency["eu"]: Destruction complete after 1s
+aws_organizations_policy_attachment.residency["us"]: Destruction complete after 2s
+aws_organizations_policy.residency["us"]: Destruction complete after 0s
+aws_organizations_policy.residency["eu"]: Destruction complete after 0s
+Destroy complete! Resources: 4 destroyed.
+
+=== State bucket emptied before deletion: 68 object versions and 47 delete markers removed, 0 errors
+
+=== infra/backend destroy, 15:48 UTC
+aws_s3_bucket_server_side_encryption_configuration.state: Destruction complete after 1s
+aws_s3_bucket_ownership_controls.state: Destruction complete after 1s
+aws_s3_bucket_versioning.state: Destruction complete after 1s
+aws_s3_bucket_policy.state: Destruction complete after 2s
+aws_s3_bucket_public_access_block.state: Destruction complete after 0s
+aws_s3_bucket.state: Destruction complete after 1s
+aws_budgets_budget.monthly: Destruction complete after 1s
+Destroy complete! Resources: 7 destroyed.
