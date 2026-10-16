@@ -1,0 +1,25 @@
+== pass fixture (S3 bucket, Lambda role, scoped inline policy)
+AUTO-APPLY ALLOWED: no delete, no account/organization/SCP change, no undocumented IAM wildcard
+exit=0
+== fail fixture (SCP, s3:* on *, AdministratorAccess attachment)
+AUTO-APPLY REFUSED:
+  (c) aws_iam_role_policy.fixture: policy: generic action s3:*
+  (c) aws_iam_role_policy.fixture: policy: generic resource *
+  (c) aws_iam_role_policy_attachment.fixture: AWS managed policy AdministratorAccess
+  (b) aws_organizations_policy.fixture: aws_organizations_policy create
+exit=1
+== destroy plan of the backend stack (planned only, not applied)
+AUTO-APPLY REFUSED:
+  (a) aws_budgets_budget.monthly: delete
+  (a) aws_s3_bucket.state: delete
+  (a) aws_s3_bucket_ownership_controls.state: delete
+  (a) aws_s3_bucket_policy.state: delete
+  (a) aws_s3_bucket_public_access_block.state: delete
+  (a) aws_s3_bucket_server_side_encryption_configuration.state: delete
+  (a) aws_s3_bucket_versioning.state: delete
+exit=1
+== end-to-end on the backend stack (no changes)
+Plan summary for ../backend:
+No changes. Your infrastructure matches the configuration.
+No changes, nothing to apply.
+exit=0
