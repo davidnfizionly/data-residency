@@ -1,0 +1,17 @@
+Run at 2026-10-16T13:13:47Z
+=== eu account
+DynamoDB tables in eu-west-1: data-residency-pii-eu
+DynamoDB tables in us-east-1: none
+S3 bucket data-residency-logs-eu-<suffix>: eu-west-1
+Table tags: Project=data-residency HomeRegion=eu-west-1 DataClassification=pii ResidencyZone=eu 
+--- S3 replication on the real log bucket: expect SCP deny
+
+aws: [ERROR]: An error occurred (AccessDenied) when calling the PutBucketReplication operation: User: arn:aws:sts::<account-id>:assumed-role/OrganizationAccountAccessRole/placement-check is not authorized to perform: s3:PutReplicationConfiguration on resource: "arn:aws:s3:::data-residency-logs-eu-<suffix>" with an explicit deny in a service control policy: arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id>
+=== us account
+DynamoDB tables in eu-west-1: none
+DynamoDB tables in us-east-1: data-residency-pii-us
+S3 bucket data-residency-logs-us-<suffix>: us-east-1
+Table tags: Project=data-residency HomeRegion=us-east-1 DataClassification=pii ResidencyZone=us 
+--- S3 replication on the real log bucket: expect SCP deny
+
+aws: [ERROR]: An error occurred (AccessDenied) when calling the PutBucketReplication operation: User: arn:aws:sts::<account-id>:assumed-role/OrganizationAccountAccessRole/placement-check is not authorized to perform: s3:PutReplicationConfiguration on resource: "arn:aws:s3:::data-residency-logs-us-<suffix>" with an explicit deny in a service control policy: arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id>

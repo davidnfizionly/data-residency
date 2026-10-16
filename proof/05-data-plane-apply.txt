@@ -1,0 +1,63 @@
+Plan summary for stack:
+  # module.data_plane_eu.data.aws_iam_policy_document.logs_tls_only will be read during apply
+  # module.data_plane_eu.aws_dynamodb_table.pii will be created
+  # module.data_plane_eu.aws_s3_bucket.logs will be created
+  # module.data_plane_eu.aws_s3_bucket_ownership_controls.logs will be created
+  # module.data_plane_eu.aws_s3_bucket_policy.logs will be created
+  # module.data_plane_eu.aws_s3_bucket_public_access_block.logs will be created
+  # module.data_plane_eu.aws_s3_bucket_server_side_encryption_configuration.logs will be created
+  # module.data_plane_us.data.aws_iam_policy_document.logs_tls_only will be read during apply
+  # module.data_plane_us.aws_dynamodb_table.pii will be created
+  # module.data_plane_us.aws_s3_bucket.logs will be created
+  # module.data_plane_us.aws_s3_bucket_ownership_controls.logs will be created
+  # module.data_plane_us.aws_s3_bucket_policy.logs will be created
+  # module.data_plane_us.aws_s3_bucket_public_access_block.logs will be created
+  # module.data_plane_us.aws_s3_bucket_server_side_encryption_configuration.logs will be created
+Plan: 12 to add, 0 to change, 0 to destroy.
+AUTO-APPLY ALLOWED: no delete, no account/organization/SCP change, no undocumented IAM wildcard
+module.data_plane_eu.aws_s3_bucket.logs: Creating...
+module.data_plane_eu.aws_dynamodb_table.pii: Creating...
+module.data_plane_us.aws_dynamodb_table.pii: Creating...
+module.data_plane_us.aws_s3_bucket.logs: Creating...
+module.data_plane_eu.aws_s3_bucket.logs: Creation complete after 5s [id=data-residency-logs-eu-<suffix>]
+module.data_plane_eu.data.aws_iam_policy_document.logs_tls_only: Reading...
+module.data_plane_eu.aws_s3_bucket_server_side_encryption_configuration.logs: Creating...
+module.data_plane_eu.data.aws_iam_policy_document.logs_tls_only: Read complete after 0s [id=3413623255]
+module.data_plane_eu.aws_s3_bucket_ownership_controls.logs: Creating...
+module.data_plane_eu.aws_s3_bucket_public_access_block.logs: Creating...
+module.data_plane_eu.aws_s3_bucket_server_side_encryption_configuration.logs: Creation complete after 1s [id=data-residency-logs-eu-<suffix>]
+module.data_plane_us.aws_s3_bucket.logs: Creation complete after 6s [id=data-residency-logs-us-<suffix>]
+module.data_plane_us.data.aws_iam_policy_document.logs_tls_only: Reading...
+module.data_plane_us.aws_s3_bucket_ownership_controls.logs: Creating...
+module.data_plane_us.aws_s3_bucket_public_access_block.logs: Creating...
+module.data_plane_us.aws_s3_bucket_server_side_encryption_configuration.logs: Creating...
+module.data_plane_us.data.aws_iam_policy_document.logs_tls_only: Read complete after 0s [id=289715177]
+module.data_plane_eu.aws_s3_bucket_public_access_block.logs: Creation complete after 1s [id=data-residency-logs-eu-<suffix>]
+module.data_plane_eu.aws_s3_bucket_policy.logs: Creating...
+module.data_plane_eu.aws_s3_bucket_ownership_controls.logs: Creation complete after 1s [id=data-residency-logs-eu-<suffix>]
+module.data_plane_eu.aws_s3_bucket_policy.logs: Creation complete after 1s [id=data-residency-logs-eu-<suffix>]
+module.data_plane_us.aws_s3_bucket_ownership_controls.logs: Creation complete after 1s [id=data-residency-logs-us-<suffix>]
+module.data_plane_us.aws_s3_bucket_public_access_block.logs: Creation complete after 1s [id=data-residency-logs-us-<suffix>]
+module.data_plane_us.aws_s3_bucket_policy.logs: Creating...
+module.data_plane_us.aws_s3_bucket_server_side_encryption_configuration.logs: Creation complete after 2s [id=data-residency-logs-us-<suffix>]
+module.data_plane_us.aws_s3_bucket_policy.logs: Creation complete after 1s [id=data-residency-logs-us-<suffix>]
+module.data_plane_eu.aws_dynamodb_table.pii: Still creating... [00m10s elapsed]
+module.data_plane_us.aws_dynamodb_table.pii: Still creating... [00m10s elapsed]
+module.data_plane_eu.aws_dynamodb_table.pii: Creation complete after 13s [id=data-residency-pii-eu]
+module.data_plane_us.aws_dynamodb_table.pii: Creation complete after 14s [id=data-residency-pii-us]
+Releasing state lock. This may take a few moments...
+
+Apply complete! Resources: 12 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+data_planes = {
+  "eu" = {
+    "region" = "eu-west-1"
+    "table" = "data-residency-pii-eu"
+  }
+  "us" = {
+    "region" = "us-east-1"
+    "table" = "data-residency-pii-us"
+  }
+}
