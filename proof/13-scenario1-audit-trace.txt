@@ -1,0 +1,60 @@
+Run at 2026-10-16T14:43:45Z
+=== 1. Write one synthetic record for synthetic-eu-01
+{
+  "trace_id": "f15854beb1fb42a5b09747e05493f6ab",
+  "record_id": "fc7e3bc1-779a-43af-b298-3001d8e91fc9",
+  "tenant_id": "synthetic-eu-01",
+  "tenant_region": "eu-west-1",
+  "storage_region": "eu-west-1",
+  "compliant": true,
+  "outcome": "stored"
+}
+=== 2. Read the trace back (GET /traces)
+{
+  "trace_id": "f15854beb1fb42a5b09747e05493f6ab",
+  "root": {
+    "tenant_id": "synthetic-eu-01",
+    "tenant_region": "eu-west-1",
+    "data_classification": "pii",
+    "storage_region": "eu-west-1",
+    "residency.compliant": true,
+    "outcome": "stored",
+    "deployment.git_commit": "07f36e20843b95c233efd084d5586dce490d1ea8",
+    "routing.registry_sha256": "6bc3be14b57b313d89d5a5c52bfabdec558924233369d172dcdfcf7e09029251"
+  },
+  "spans": [
+    {
+      "name": "pii.write",
+      "status": "OK",
+      "storage_region": "eu-west-1",
+      "duration_ms": 174.11
+    },
+    {
+      "name": "sts.AssumeRole",
+      "status": "OK",
+      "storage_region": null,
+      "duration_ms": 0.02
+    },
+    {
+      "name": "dynamodb.PutItem",
+      "status": "OK",
+      "storage_region": "eu-west-1",
+      "duration_ms": 60.91
+    },
+    {
+      "name": "s3.PutObject",
+      "status": "OK",
+      "storage_region": "eu-west-1",
+      "duration_ms": 111.36
+    }
+  ]
+}
+Check: tenant_region=eu-west-1 storage_region=eu-west-1 -> MATCH
+=== 3. Git: the deployed commit and the commit that defined this routing
+Deployed commit (span deployment.git_commit): 07f36e2 2026-10-16T17:38:48+03:00 Record the committer e-mail incident and ignore the Vite cache
+Last change to infra/stack/tenants.json at that commit: c2093fe 2026-10-16T16:24:21+03:00 Phase 4: router Lambda, IAM-authorized HTTP API, residency spans
+Registry entry at the deployed commit:
+{"synthetic-eu-01":{"label":"Synthetic Tenant EU 01","tenant_region":"eu-west-1","storage_region":"eu-west-1"}}
+=== 4. Physical check in each member account
+eu account, data-residency-pii-eu (eu-west-1): item for record fc7e3bc1-779a-43af-b298-3001d8e91fc9 -> f15854beb1fb42a5b09747e05493f6ab; access-log objects for it -> 1
+us account, data-residency-pii-us (us-east-1): item for record fc7e3bc1-779a-43af-b298-3001d8e91fc9 -> not present; access-log objects for it -> 0

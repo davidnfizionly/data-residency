@@ -75,3 +75,13 @@ Real problems, root causes and fixes, written as they occur. Corrections of earl
   - Check after the fix: every commit on `main` has the noreply address as author and committer; no other branch exists.
 - Remaining exposure: GitHub keeps `refs/pull/4/head` (read-only) pointing at the branch-update merge commit, and old commit SHAs can stay reachable by direct URL until GitHub's garbage collection. Only GitHub Support can purge them.
 - Prevention: after every merge, the commits on `main` are checked through the API for any non-noreply author or committer.
+
+## Phase 7 - Scenario script defects found on the first run
+
+- What: the first run of the audit walkthrough printed no "last routing commit" and reported the access-log object as `None`; the SCP scenario printed a jq error before each result.
+- Root causes: `git log -- infra/stack/tenants.json` ran from `infra/stack`, so the path was resolved relative to that directory; the AWS CLI auto-paginates `list-objects-v2` and drops `KeyCount`; `aws lambda invoke ... /dev/stdout --query StatusCode` appended the status code to the payload stream.
+- Fix: run git from the repository root, count `Contents` instead of `KeyCount`, write the payload to a temporary file. Both scenarios were rerun; the outputs in `proof/13` and `proof/15` are from the second run.
+
+## Phase 7 - What the policy check cannot see
+
+- The scenario 4 change (router code sending every write to us-east-1) passed the OPA check, as expected: the policy evaluates the Terraform plan, and the tenant registry did not change. The violation was stopped at runtime by the US account SCP (every EU write refused, nothing stored) and corrected by a `git revert` merged through the same pipeline. This is the reason for the second, account-level layer.
