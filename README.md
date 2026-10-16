@@ -97,6 +97,8 @@ cd infra/org && ./test-scp.sh
 
 Output: [proof/04-scp-deny-tests.txt](proof/04-scp-deny-tests.txt)
 
+![EU Account SCP](proof/screenshots/02-scp-policy.png)
+
 Each data plane exists only in its own account and region, and the SCP refuses S3 replication on the real buckets.
 
 ```bash
@@ -104,6 +106,8 @@ cd infra/stack && ./verify-placement.sh
 ```
 
 Output: [proof/06-data-plane-placement.txt](proof/06-data-plane-placement.txt)
+
+![EU PII Table Tags](proof/screenshots/03-dynamodb-eu-table.png)
 
 Scenario 1, audit trace: an EU write is traced to eu-west-1, tied to the deployed commit and to the commit that defined the routing, and the item exists only in the EU account.
 
@@ -144,6 +148,8 @@ cd infra/stack && ./scenario-rollback-watch.sh
 ```
 
 Output: [proof/17-scenario4-bad-change-live.txt](proof/17-scenario4-bad-change-live.txt), [proof/18-scenario4-rollback-timing.txt](proof/18-scenario4-rollback-timing.txt)
+
+![Rollback Apply Timing](proof/screenshots/06-rollback-apply.png)
 
 The compliance history lists every change and every blocked pull request.
 

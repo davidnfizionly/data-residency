@@ -85,3 +85,8 @@ Real problems, root causes and fixes, written as they occur. Corrections of earl
 ## Phase 7 - What the policy check cannot see
 
 - The scenario 4 change (router code sending every write to us-east-1) passed the OPA check, as expected: the policy evaluates the Terraform plan, and the tenant registry did not change. The violation was stopped at runtime by the US account SCP (every EU write refused, nothing stored) and corrected by a `git revert` merged through the same pipeline. This is the reason for the second, account-level layer.
+
+## Phase 8 - Console role switch impossible for the EU account capture
+
+- What: the capture of the EU PII table needed the AWS console in the EU member account, but the console session was the management account's root user, and the root user cannot switch roles.
+- Fix: no IAM user or password was created. A one-off console sign-in link was built through the AWS federation endpoint from a 1-hour `OrganizationAccountAccessRole` session in the EU account, restricted by a session policy to DynamoDB configuration reads (`Describe*`, `List*`, metrics and alarms; no `GetItem`, `Scan` or `Query`). The link was written to a local file outside the repository, never printed, and had to be used within 15 minutes; the session expired on its own at 16:22 UTC, so there was nothing to delete afterwards.
