@@ -1,0 +1,58 @@
+Scenario 4 - compliant rollback by git revert. One measured run (n=1).
+
+Timeline (UTC), all values from GitHub, the pipeline log, Lambda and the write watcher below:
+- 4e38b70 "Route all writes through the us-east-1 data plane" merged (PR #6); pipeline applied it, router updated 14:48:14
+  Effect: every EU write through the API was refused by the US account SCP (403 denied_by_scp), nothing stored.
+- 15:00:25  PR #7 merged (git revert of 4e38b70, merge commit 151f849)
+- 15:00:28  pipeline run 38920385510 created (push to main)
+- 15:00:59  terraform apply started (plan + OPA check passed before it)
+- 15:01:09  Lambda configuration LastModified (router code back to the previous version)
+- 15:01:15  terraform apply finished: 0 added, 1 changed, 0 destroyed
+- 15:01:08.7  last refused EU write (response time)
+- 15:01:15.8  first EU write stored in eu-west-1 (response time)
+
+Measured:
+- merge to end of terraform apply: 50 s
+- merge to first compliant EU write: 51 s (writes every ~5.5 s, so the resolution is about 6 s)
+
+=== Write watcher (POST /records for synthetic-eu-01 through the API, timestamp = response received)
+2026-10-16T14:59:06.598748368Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=b1067f556b6467449aa70681d1a46640
+2026-10-16T14:59:12.211446483Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=60af8194e34dd71184a8820e6c0d0217
+2026-10-16T14:59:18.110728586Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=d23c41be7ce54a81e59f789653580994
+2026-10-16T14:59:23.978870149Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=b912f9be9643fb15301e9c3e7aea55b9
+2026-10-16T14:59:29.539357917Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=619b01c51b1b45384218e2716140b670
+2026-10-16T14:59:35.143513048Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=befb7c90268192262d4daf6a48673c87
+2026-10-16T14:59:40.710188119Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=26895362ed1f39467f3df369028a2121
+2026-10-16T14:59:46.411588214Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=ccdbc44debeb9c3e6dfa4495cc6e8894
+2026-10-16T14:59:52.158402895Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=c6fb3c29ea4cb6339a1b976d7b079216
+2026-10-16T14:59:57.739443521Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=fc208bbb869da04a3631d5102718e543
+2026-10-16T15:00:03.396708355Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=5f502525bdcf59dc961314e9a1acf714
+2026-10-16T15:00:10.858363875Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=a5b2b88b82f3c9428423bf46131cd42b
+2026-10-16T15:00:16.453386992Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=ba155f36761bfe2ebc7ca0e0b0a24cf5
+2026-10-16T15:00:22.346168633Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=1d1c144168fff21ca0be0baab3d414f7
+2026-10-16T15:00:28.197264140Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=69050980423aa621853ee75c7ad7677b
+2026-10-16T15:00:34.2777896Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=909d51821705f8a123a8b34833324e0f
+2026-10-16T15:00:39.565027746Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=bd85f70129e7c8af449b29a179be4c29
+2026-10-16T15:00:45.141645108Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=16cfa8770f120e3c759ba4d8539dc452
+2026-10-16T15:00:50.747396629Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=8c26fdb4272efd794c4f53ce5c59386e
+2026-10-16T15:00:56.327287852Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=fe7d939a35ea3bf8fe757a6bc9ea5e04
+2026-10-16T15:01:01.996872857Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=c69e4aed117299d672154b4b317514a4
+2026-10-16T15:01:08.670366530Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=1b12eb05c45e554da69466f3d8bbd174
+2026-10-16T15:01:15.776844983Z http=201 outcome=stored tenant_region=eu-west-1 storage_region=eu-west-1 trace=c918e0b2c878b55953976ca5c70196b9
+2026-10-16T15:01:21.541332525Z http=201 outcome=stored tenant_region=eu-west-1 storage_region=eu-west-1 trace=ff7b861eef8c3b57c5cd43aa0399aa53
+2026-10-16T15:01:27.104113459Z http=201 outcome=stored tenant_region=eu-west-1 storage_region=eu-west-1 trace=e2a3062f89eefbe14f352e484881c91c
+2026-10-16T15:01:32.772556282Z http=201 outcome=stored tenant_region=eu-west-1 storage_region=eu-west-1 trace=541c97fbc04394beb40954403c4bb890
+2026-10-16T15:01:38.306536915Z http=201 outcome=stored tenant_region=eu-west-1 storage_region=eu-west-1 trace=4d104735f4ecaa68d380fcd4be5fef32
+
+=== Pipeline run 38920385510 (apply job, extract)
+  # aws_lambda_function.router will be updated in-place
+Plan: 0 to add, 1 to change, 0 to destroy.
+OPA residency check passed: no tenant, table or replica leaves its region.
+Apply started 2026-10-16T15:00:59Z
+aws_lambda_function.router: Modifications complete after 12s [id=data-residency-router]
+Apply complete! Resources: 0 added, 1 changed, 0 destroyed.
+Apply finished 2026-10-16T15:01:15Z
+=== Git history on main
+151f849 2026-10-16T18:00:24+03:00 Revert "Route all writes through the us-east-1 data plane"
+4e38b70 2026-10-16T17:47:28+03:00 Route all writes through the us-east-1 data plane
+07f36e2 2026-10-16T17:38:48+03:00 Record the committer e-mail incident and ignore the Vite cache

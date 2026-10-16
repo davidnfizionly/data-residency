@@ -1,0 +1,28 @@
+Run at 2026-10-16T14:44:27Z
+=== Direct invocation: synthetic-eu-01 forced to us-east-1
+{
+  "statusCode": 403,
+  "body": {
+    "trace_id": "2fa9323b6a47f142c3a7b30c934e7e75",
+    "tenant_id": "synthetic-eu-01",
+    "tenant_region": "eu-west-1",
+    "storage_region": "us-east-1",
+    "outcome": "denied_by_scp",
+    "error": "AccessDeniedException: User: arn:aws:sts::<account-id>:assumed-role/data-residency-writer-us/router-eu is not authorized to perform: dynamodb:PutItem on resource: arn:aws:dynamodb:us-east-1:<account-id>:table/data-residency-pii-us with an explicit deny in a service control policy: arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id>"
+  }
+}
+=== Direct invocation: synthetic-us-01 forced to eu-west-1
+{
+  "statusCode": 403,
+  "body": {
+    "trace_id": "79f16241c69f0a87528991dbf89554d9",
+    "tenant_id": "synthetic-us-01",
+    "tenant_region": "us-east-1",
+    "storage_region": "eu-west-1",
+    "outcome": "denied_by_scp",
+    "error": "AccessDeniedException: User: arn:aws:sts::<account-id>:assumed-role/data-residency-writer-eu/router-us is not authorized to perform: dynamodb:PutItem on resource: arn:aws:dynamodb:eu-west-1:<account-id>:table/data-residency-pii-eu with an explicit deny in a service control policy: arn:aws:organizations::<account-id>:policy/o-<id>/service_control_policy/p-<id>"
+  }
+}
+=== Items stored for the wrong tenant in each account (expect 0)
+data-residency-pii-eu (eu-west-1): items for synthetic-us-01 = 0
+data-residency-pii-us (us-east-1): items for synthetic-eu-01 = 0

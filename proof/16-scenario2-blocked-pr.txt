@@ -1,0 +1,25 @@
+Scenario 2 - blocked violation in CI. Pull request #3 was opened from the audit console (headless run) and closed without merging.
+=== Pull request
+{"closed":"2026-10-16T14:07:33Z","created":"2026-10-16T14:06:43Z","files":["infra/stack/tenants.json +1 -1"],"merged":null,"number":3,"state":"CLOSED","title":"Route synthetic-eu-01 storage to us-east-1"}
+=== Diff
+diff --git a/infra/stack/tenants.json b/infra/stack/tenants.json
+index 64ab792..fec0b80 100644
+--- a/infra/stack/tenants.json
++++ b/infra/stack/tenants.json
+@@ -2,7 +2,7 @@
+   "synthetic-eu-01": {
+     "label": "Synthetic Tenant EU 01",
+     "tenant_region": "eu-west-1",
+-    "storage_region": "eu-west-1"
++    "storage_region": "us-east-1"
+   },
+   "synthetic-eu-02": {
+     "label": "Synthetic Tenant EU 02",
+=== Required check on main (branch protection)
+{"enforce_admins":true,"pull_request_required":true,"required_checks":["plan-and-policy"]}
+=== Check result
+{"completedAt":"2026-10-16T14:07:22Z","conclusion":"FAILURE","name":"plan-and-policy","startedAt":"2026-10-16T14:06:49Z"}
+=== Failed step log (run 38913138133)
+OPA residency check FAILED:
+RESIDENCY VIOLATION: tenant synthetic-eu-01 must stay in eu-west-1, but this change would route its personal data to us-east-1.
+##[error]Process completed with exit code 1.

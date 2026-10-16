@@ -1,0 +1,6 @@
+Scenario 4, step 1: router at commit 4e38b70 (Route all writes through the us-east-1 data plane), deployed by the pipeline at 2026-10-16T14:48:14Z.
+=== EU tenant, 3 writes through the API
+2026-10-16T14:58:22.478915613Z http=403 outcome=denied_by_scp tenant_region=eu-west-1 storage_region=us-east-1 trace=06fe76e4f169da480e2555f3d7588850
+=== US tenant, 2 writes through the API
+2026-10-16T14:58:31.279057633Z http=201 outcome=stored tenant_region=us-east-1 storage_region=us-east-1 trace=5596910d4814cc2864c65af25904f0eb
+2026-10-16T14:58:34.227942288Z http=201 outcome=stored tenant_region=us-east-1 storage_region=us-east-1 trace=d1027867a56ed1613294be8d2379a569

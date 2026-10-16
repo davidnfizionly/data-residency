@@ -1,0 +1,9 @@
+Run at 2026-10-16T14:40:29Z, router deployed at 2026-10-16T14:39:33Z, no invocation in between
+Requests: 40 sent (10 concurrent burst, 30 sequential), 40 returned 201, 40 matched to a REPORT line
+All stored in: ['eu-west-1']
+Values in milliseconds.
+COLD client latency (end to end, signed request from the test machine): n=10  min= 2078.7  median= 2463.3  max= 2516.5
+COLD Lambda Init Duration (runtime start + module init):              n=10  min=  327.4  median=  447.2  max=  462.2
+COLD Lambda Duration (handler, incl. first AssumeRole):                 n=10  min=  869.3  median= 1137.6  max= 1187.0
+WARM client latency (end to end, signed request from the test machine): n=30  min=  735.4  median=  782.6  max=  964.6
+WARM Lambda Duration (handler, cached writer credentials):            n=30  min=  129.9  median=  169.3  max=  347.2
